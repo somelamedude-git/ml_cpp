@@ -41,10 +41,10 @@ int* flatten_array(int** matrix, int rows, int cols){
 
 // I need the cycle to complete
 
-int* matrix_mult(int rows, int cols, int** x_matrix, int** w_matrix){ // We still have rows and cols here, weight*x chalega, that's why this model for now
-    int* flat_x = flatten_array(x_matrix, rows, cols);
-    int* flat_w = flatten_array(w_matrix, cols, 1);
-    int* y_matrix = new int[rows]();
+unsigned short int* matrix_mult(int rows, int cols, int** x_matrix, int** w_matrix){ // We still have rows and cols here, weight*x chalega, that's why this model for now
+    unsigned short int* flat_x = flatten_array(x_matrix, rows, cols);
+    unsigned short int* flat_w = flatten_array(w_matrix, cols, 1);
+    unsigned short int* y_matrix = new unsigned short int[rows]();
     int k = -1;
 
     for(int i =0; i<cols*rows; i++){
