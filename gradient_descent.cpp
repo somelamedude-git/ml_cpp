@@ -57,13 +57,13 @@ unsigned short int* matrix_mult(int rows, int cols, int** x_matrix, int** w_matr
     return y_matrix;
 }
 
-int* produce_defined_output(int m, int c, int* input_arr, int size){ // m is slope, c is the intercept :)
-    int* y_axis = new int[size];
-
-    for(int i = 0; i<size; i++){
-        y_axis[i] = m*input_arr[i] + c;
+int* produce_defined_output(int* resultant_mult_matrix, int* constant_matrix, int size){ // m is slope, c is the intercept :)
+    //both should have same size as cols did
+    int* resultant_matrix = new int[size];
+    for(int i =0; i<size; i++){
+        resultant_matrix[i] = constant_matrix[i] + resultant_mult_matrix[i];
     }
-    return y_axis;
+    return resultant_matrix;
 }
 
 int main(){
