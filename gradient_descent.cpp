@@ -29,8 +29,23 @@ int** produce_random_arr_matrix(int rows, int cols){
     return matrix;
 }
 
-int* matrix_mult(int rows, int cols){ // We still have rows and cols here, weight*x chalega, that's why this model for now
+int* flatten_array(int** matrix, int rows, int cols){
+    int* flattened_array = new int[rows*cols];
+    for(int i=0; i<rows; i++){
+        for(int j =0; j<cols; j++){
+            flattened_array[i*cols + j] = matrix[i][j];
+        }
+    }
+    return flattened_array;
+}
 
+int** matrix_mult(int rows, int cols, int** x_matrix, int** w_matrix){ // We still have rows and cols here, weight*x chalega, that's why this model for now
+    // 1*cols, should be the dimension of w, flat arr
+    for(int i =0; i<rows; i++){
+        for(int j=0; i<cols; j++){
+
+        }
+    }
 }
 
 int* produce_defined_output(int m, int c, int* input_arr, int size){ // m is slope, c is the intercept :)
