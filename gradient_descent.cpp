@@ -20,16 +20,13 @@ int* produce_random_arr(int size){
     return rand_arr;
 }
 
-int* produce_random_arr_matrix(int dimension_one, int dimension_two){
-    int resultan[dimension_two];
-    for(int i = 0; i<dimension_two; i++){
-        int arr[dimension_one] = produce_random_arr(dimension_one);
-        resultant[i] = arr;
+int** produce_random_arr_matrix(int rows, int cols){
+    int** matrix = new int[rows];
+    for(int i =0; i<rows; i++){
+        matrix[i] = produce_random_arr(cols);
     }
-
-    return resultant;
+    return matrix;
 }
-
 int* produce_defined_output(int m, int c, int* input_arr, int size){ // m is slope, c is the intercept :)
     int* y_axis = new int[size];
 
