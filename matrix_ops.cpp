@@ -51,6 +51,25 @@ int** matrix_multiplication(unsigned short int** matrix_one, unsigned short int*
     return product_matrix;
 }
 
+unsigned short int** create_matrix(int arr, int size_of_arr, int rows, int cols){
+    if(size_of_arr != (rows*cols)){
+        throw runtime_error("Number of elements don't correspond to the dimension");
+    }
+
+    int** matrix = new int*[rows];
+    for(int i =0; i<rows; i++){
+        matrix[i] = new int[cols];
+    }
+
+    for(int i =0; i<rows; i++){
+        for(int j =0; j<cols; j++){
+            matrix[i][j] = arr[i*cols + j];
+        }
+    }
+
+    return matrix;
+}
+
 int main(){
 
 }
