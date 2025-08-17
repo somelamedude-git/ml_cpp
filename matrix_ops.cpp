@@ -1,5 +1,8 @@
 #include <iostream>
+#include <stdexcept>
 #include "gradient_descent.h"
+
+using namespace std;
 
 unsigned short int** calculate_square_of_matrix(unsigned short int** matrix, int rows, int cols){
 
@@ -22,4 +25,15 @@ unsigned short int** transpose(unsigned short int** matrix, int rows, int cols){
     }
 
     return transposed_matrix;
+}
+
+// put the input in such a way such that matrix_one*matrix_two
+
+unsigned short int** matrix_multiplication(unsigned short int** matrix_one, unsigned short int** matrix_two
+int col_one, int col_two, int row_one, int row_two
+){
+    if(col_one != row_two){
+        throw runtime_error("col_one must be equal to row_two");
+        return;
+    }
 }
