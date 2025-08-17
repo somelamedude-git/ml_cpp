@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include "gradient_descent.h"
 
 using namespace std;
 
@@ -56,6 +57,11 @@ unsigned short int* matrix_mult(int rows, int cols, int** x_matrix, int** w_matr
     delete[] flat_x;
     return y_matrix;
 }
+
+// int compute_gradient(int** x_matrix, int** w_matrix, int** y_matrix, int rows, int cols){
+//     unsigned short int* y_matrix = matrix_mul
+// }
+
 
 int* produce_defined_output(int* resultant_mult_matrix, int* constant_matrix, int size){ // m is slope, c is the intercept :)
     //both should have same size as cols did
