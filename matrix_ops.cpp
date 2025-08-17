@@ -43,7 +43,7 @@ int** matrix_multiplication(unsigned short int** matrix_one, unsigned short int*
     for(int i =0; i<row_one; i++){
         for(int k=0; k<col_two; k++){
             for(int j=0; j<row_two; j++){
-                product_matrix[i][k] += (matrix_one[i][j]*matrix_two[j][]);
+                product_matrix[i][k] += (matrix_one[i][j]*matrix_two[j][k]);
             }
         }
     }
@@ -51,14 +51,14 @@ int** matrix_multiplication(unsigned short int** matrix_one, unsigned short int*
     return product_matrix;
 }
 
-unsigned short int** create_matrix(int arr, int size_of_arr, int rows, int cols){
+unsigned short int** create_matrix(unsigned short int* arr, int size_of_arr, int rows, int cols){
     if(size_of_arr != (rows*cols)){
         throw runtime_error("Number of elements don't correspond to the dimension");
     }
 
-    int** matrix = new int*[rows];
+   unsigned short int** matrix = new unsigned short int*[rows];
     for(int i =0; i<rows; i++){
-        matrix[i] = new int[cols];
+        matrix[i] = new unsigned short int[cols];
     }
 
     for(int i =0; i<rows; i++){
@@ -71,5 +71,28 @@ unsigned short int** create_matrix(int arr, int size_of_arr, int rows, int cols)
 }
 
 int main(){
+      unsigned short  int arr[] = {0,1,2,3,4,5,6,7,8};  
+    int rows = 3, cols = 3;
 
+    try {
+        unsigned short int** matrix = create_matrix(arr, 9, rows, cols);
+
+        cout << "Matrix:" << endl;
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+                cout << matrix[i][j] << " ";
+            }
+            cout << endl;
+        }
+
+        for(int i = 0; i < rows; i++){
+            delete[] matrix[i];
+        }
+        delete[] matrix;
+    }
+    catch (const runtime_error& e){
+        cerr << "Error: " << e.what() << endl;
+    }
+
+    return 0;
 }
