@@ -43,7 +43,7 @@ int** matrix_multiplication(unsigned short int** matrix_one, unsigned short int*
     for(int i =0; i<row_one; i++){
         for(int k=0; k<col_two; k++){
             for(int j=0; j<row_two; j++){
-                product_matrix[i][k] += (matrix_one[i][j]*matrix_two[j][i]);
+                product_matrix[i][k] += (matrix_one[i][j]*matrix_two[j][]);
             }
         }
     }
@@ -52,51 +52,5 @@ int** matrix_multiplication(unsigned short int** matrix_one, unsigned short int*
 }
 
 int main(){
-    int row_one = 2, col_one = 3;
-    int row_two = 3, col_two = 2;
 
-    // Allocate first matrix (2x3)
-    unsigned short int** matrix_one = new unsigned short int*[row_one];
-    for (int i = 0; i < row_one; i++) {
-        matrix_one[i] = new unsigned short int[col_one];
-    }
-
-    // Fill it
-    unsigned short int counter = 1;
-    for (int i = 0; i < row_one; i++) {
-        for (int j = 0; j < col_one; j++) {
-            matrix_one[i][j] = counter++;
-        }
-    }
-
-    // Allocate second matrix (3x2)
-    unsigned short int** matrix_two = new unsigned short int*[row_two];
-    for (int i = 0; i < row_two; i++) {
-        matrix_two[i] = new unsigned short int[col_two];
-    }
-
-    // Fill it
-    counter = 1;
-    for (int i = 0; i < row_two; i++) {
-        for (int j = 0; j < col_two; j++) {
-            matrix_two[i][j] = counter++;
-        }
-    }
-
-    try {
-        int** product = matrix_multiplication(matrix_one, matrix_two, col_one, col_two, row_one, row_two);
-
-        cout << "Product matrix:" << endl;
-        for (int i = 0; i < row_one; i++) {
-            for (int j = 0; j < col_two; j++) {
-                cout << product[i][j] << " ";
-            }
-            cout << endl;
-        }
-
-    } catch (const runtime_error& e) {
-        cerr << "Error: " << e.what() << endl;
-    }
-
-    return 0;
 }
