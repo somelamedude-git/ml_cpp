@@ -18,5 +18,7 @@ class ActivationFunctions{
         return (input*this->weight)+this->bias;
     }
 
-    double relu_function()
+    double softplus(){
+        
+    }
 }
