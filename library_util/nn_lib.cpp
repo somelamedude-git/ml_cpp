@@ -1,4 +1,6 @@
 #include <iostream>
+#include "math_expr.h"
+
 using namespace std;
 
 class ActivationFunctions{
@@ -15,10 +17,14 @@ class ActivationFunctions{
     }
 
     double compute_x_axis(double input){
-        return (input*this->weight)+this->bias;
+        this->x_axis= (input*this->weight)+this->bias;
     }
 
     double softplus(){
-        
+        MathExpansions m1(this->x_axis);
+	double e_val = m1.eExpand();
+	
+	MathExpansions m2(1 + e_val);
+	return m2.logarithm();
     }
-}
+};
