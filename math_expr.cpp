@@ -4,9 +4,14 @@
 
 class MathExpansions{
     private:
-        double input;
+        double x;
     public:
-        MathExpansions(double input){
-            this->input = input;
+        MathExpansions(double x){
+            this->x = x;
         }
+
+	double logarithm(){
+		double output = (x-1) - ((x-1)*(x-1))/2 + ((x-1)*(x-1)*(x-1))/3 - ((x-1)*(x-1)*(x-1)*(x-1))/4;
+		return output;
+	}
 }
