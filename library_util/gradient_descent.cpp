@@ -6,7 +6,7 @@ using namespace std;
 
 //The first three functions are just incase somebody wants to test on random numbers first, with linear form for now
 
-int produce_random(){ // This is just producing random numbers, what order we need each element in, depends
+/*int produce_random(){ // This is just producing random numbers, what order we need each element in, depends
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> dis(0,99); // This will just produce the integers
@@ -70,8 +70,28 @@ int* produce_defined_output(int* resultant_mult_matrix, int* constant_matrix, in
         resultant_matrix[i] = constant_matrix[i] + resultant_mult_matrix[i];
     }
     return resultant_matrix;
+}*/
+
+void compute_mean_error(float expected_output[], float output[], int size, float* mean_error){
+	*mean_error = 0.0f;
+
+	for(int i =0; i<size; i++){
+		float diff = expected_output[i]-output[i];
+		*mean_error += (float)(diff*diff);
+	}
+	*mean_error /= (float)size;
 }
 
-int main(){
-   
+int main() {
+    // Example arrays
+    float expected[] = {1.0f, 2.0f, 3.0f, 4.0f};
+    float output[]   = {0.9f, 2.1f, 2.5f, 4.2f};
+    int size = 4;
+
+    float mean_error;
+    compute_mean_error(expected, output, size, &mean_error);
+
+    cout << "Mean Squared Error = " << mean_error << endl;
+
+    return 0;
 }

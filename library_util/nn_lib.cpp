@@ -16,15 +16,14 @@ class ActivationFunctions{
         this->x_axis = 0;
     }
 
-    double compute_x_axis(double input){
+    void compute_x_axis(double input){
         this->x_axis= (input*this->weight)+this->bias;
     }
 
     double softplus(){
         MathExpansions m1(this->x_axis);
-	double e_val = m1.eExpand();
-	
-	MathExpansions m2(1 + e_val);
-	return m2.logarithm();
+        double softplus_val = MathExpansions(1 + m1.eExpand()).logarithm();
+
+	return softplus_val;
     }
 };
