@@ -58,10 +58,8 @@ void matrix_multiplication(
 }
 
 void convert_twoD(float single_D_mat[], int size, float two_D_mat[1][]){
-	for(int i = 0; i<1; i++){
-		for(int j =0; j<size; j++){
-			two_D_mat[i][j] = single_D_mat[j];
-		}
+	for(int j =0; j<size; j++){
+		two_D_mat[0][j] = single_D_mat[j];
 	}
 }
 
