@@ -34,9 +34,9 @@ unsigned short int** transpose(unsigned short int** matrix, int rows, int cols){
 // put the input in such a way such that matrix_one*matrix_two
 // strassen's algorithm here will create unnecessary overhead
 void matrix_multiplication(
-    unsigned short int matrix_one[][MAX_COL_ONE],
-    unsigned short int matrix_two[][MAX_COL_TWO],
-    int product_matrix[][MAX_COL_TWO],
+    float matrix_one[][MAX_COL_ONE],
+    float matrix_two[][MAX_COL_TWO],
+    float product_matrix[][MAX_COL_TWO],
     int row_one, int col_one, int row_two, int col_two
 ) {
     if (col_one != row_two) {
