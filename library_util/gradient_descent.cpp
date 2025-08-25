@@ -23,7 +23,7 @@ int** produce_random_arr(int size){ // perform reshape
 }
 
 int** produce_random_arr_matrix(int rows, int cols){
-    int** matrix = new int[rows];
+    int** matrix = new int*[rows];
     for(int i =0; i<rows; i++){
         matrix[i] = produce_random_arr(cols);
     }
@@ -83,7 +83,6 @@ void compute_mean_error(float expected_output[], float output[], int size, float
 }
 
 int main() {
-    // Example arrays
     float expected[] = {1.0f, 2.0f, 3.0f, 4.0f};
     float output[]   = {0.9f, 2.1f, 2.5f, 4.2f};
     int size = 4;

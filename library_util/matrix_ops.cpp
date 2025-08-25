@@ -2,6 +2,9 @@
 #include <stdexcept>
 #include "gradient_descent.h"
 
+#define MAX_COL_ONE 100
+#define MAX_COL_TWO 100
+
 using namespace std;
 
 // unsigned short int** calculate_square_of_matrix(unsigned short int** matrix, int rows, int cols){
@@ -29,26 +32,28 @@ unsigned short int** transpose(unsigned short int** matrix, int rows, int cols){
 
 // put the input in such a way such that matrix_one*matrix_two
 // strassen's algorithm here will create unnecessary overhead
-int** matrix_multiplication(unsigned short int** matrix_one, unsigned short int** matrix_two, int col_one, int col_two, int row_one, int row_two){
-    if(col_one != row_two){
-        throw runtime_error("col_one must be equal to row_two");
+void matrix_multiplication(
+    unsigned short int matrix_one[][MAX_COL_ONE],
+    unsigned short int matrix_two[][MAX_COL_TWO],
+    int product_matrix[][],
+    int row_one, int col_one, int row_two, int col_two
+) {
+    if (col_one != row_two) {
+        printf("Error: col_one must equal row_two\n");
+        return;
     }
 
-    int** product_matrix = new int*[row_one]; // dimension of new matrix will be row_one*col_two
+    for(int i = 0; i < row_one; i++)
+        for(int k = 0; k < col_two; k++)
+            product_matrix[i][k] = 0;
 
-    for(int i =0; i<row_one; i++){
-        product_matrix[i] = new int[col_two]();
-    }
-
-    for(int i =0; i<row_one; i++){
-        for(int k=0; k<col_two; k++){
-            for(int j=0; j<row_two; j++){
-                product_matrix[i][k] += (matrix_one[i][j]*matrix_two[j][k]);
+    for(int i = 0; i < row_one; i++) {
+        for(int k = 0; k < col_two; k++) {
+            for(int j = 0; j < col_one; j++) {
+                product_matrix[i][k] += matrix_one[i][j] * matrix_two[j][k];
             }
         }
     }
-
-    return product_matrix;
 }
 
 unsigned short int** create_matrix(unsigned short int* arr, int size_of_arr, int rows, int cols){
