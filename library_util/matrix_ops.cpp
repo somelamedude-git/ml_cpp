@@ -83,29 +83,3 @@ unsigned short int** create_matrix(unsigned short int* arr, int size_of_arr, int
     return matrix;
 }
 
-int main(){
-      unsigned short  int arr[] = {0,1,2,3,4,5,6,7,8};  
-    int rows = 3, cols = 3;
-
-    try {
-        unsigned short int** matrix = create_matrix(arr, 9, rows, cols);
-
-        cout << "Matrix:" << endl;
-        for(int i = 0; i < rows; i++){
-            for(int j = 0; j < cols; j++){
-                cout << matrix[i][j] << " ";
-            }
-            cout << endl;
-        }
-
-        for(int i = 0; i < rows; i++){
-            delete[] matrix[i];
-        }
-        delete[] matrix;
-    }
-    catch (const runtime_error& e){
-        cerr << "Error: " << e.what() << endl;
-    }
-
-    return 0;
-}

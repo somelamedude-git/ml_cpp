@@ -23,21 +23,21 @@ class ActivationFunctions{
         this->x_axis= (input*this->weight)+this->bias;
     }
 
-    double softplus(){ // To find activation
-        MathExpansions m1(this->x_axis);
+    double softplus(float x){ // To find activation
+        MathExpansions m1(x);
         double softplus_val = MathExpansions(1 + m1.eExpand()).logarithm();
 
 	return softplus_val;
     }
 
-    float[] layer_calc_forwardprop(int size_next, int size_current, float weights[][MAX_COL_ONE], float biases[], float activation[], float resultant[1][MAX_COL_ONE]){
+    void layer_calc_forwardprop(int size_next, int size_current, float weights[][MAX_COL_ONE], float biases[], float activation[], float resultant[1][MAX_COL_ONE]){
 	   // Weights are going to have dimensions [size_current][size_next]
 	   // biases are going to have dimensions [size_next]
 	   // activation -> [size_current]
 
 	    float two_D_mat[1][MAX_COL_ONE];
 	    convert_twoD(activation, size_current, two_D_mat);
-	    float product_matrix[1][size_next];
+	    float product_matrix[1][MAX_COL_ONE];
 
 	    matrix_multiplication(two_D_mat, weights, product_matrix, 1, size_current, size_next, size_current);
 
@@ -47,9 +47,41 @@ class ActivationFunctions{
 	    }
     }
 
-
-
-
-
-
 };
+
+
+int main(){
+    ActivationFunctions af(1.0, 0.0);
+
+    // Example: 2 input neurons -> 3 output neurons
+    int size_current = 2;
+    int size_next = 3;
+
+    float weights[MAX_COL_ONE][MAX_COL_ONE] = {0};
+    float biases[MAX_COL_ONE] = {0};
+    float activation[MAX_COL_ONE] = {0};
+    float resultant[1][MAX_COL_ONE] = {0};
+
+    // Input activations
+    activation[0] = 1.0;
+    activation[1] = 2.0;
+
+    // Weights: shape (2, 3)
+    weights[0][0] = 0.5; weights[0][1] = -1.0; weights[0][2] = 2.0;
+    weights[1][0] = 1.5; weights[1][1] = 0.3;  weights[1][2] = -0.7;
+
+    // Biases
+    biases[0] = 0.1;
+    biases[1] = -0.2;
+    biases[2] = 0.05;
+
+    // Run forward propagation
+    af.layer_calc_forwardprop(size_next, size_current, weights, biases, activation, resultant);
+
+    cout << "Resultant activations after forward prop:" << endl;
+    for(int j=0; j<size_next; j++){
+        cout << "Neuron " << j << ": " << resultant[0][j] << endl;
+    }
+
+    return 0;
+}
