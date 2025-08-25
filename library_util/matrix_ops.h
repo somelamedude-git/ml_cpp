@@ -7,3 +7,4 @@
 unsigned short int** transpose(unsigned short int** matrix, int rows, int cols);
 void matrix_multiplication(unsigned short int matrix_one[][MAX_COL_ONE], unsigned short int matrix_two[][MAX_COL_TWO],
 		int product_matrix[][MAX_COL_TWO], int row_one, int col_one, int row_two, int col_two);
+
