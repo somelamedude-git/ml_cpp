@@ -1,6 +1,7 @@
 #include <iostream>
 #include "math_expr.h"
 #include "matrix_ops.h"
+#include <cmath>
 
 #define MAX_COL_ONE 100
 
@@ -23,14 +24,16 @@ class ActivationFunctions{
         this->x_axis= (input*this->weight)+this->bias;
     }
 
-    double softplus(float x){ // To find activation
-        MathExpansions m1(x);
-        double softplus_val = MathExpansions(1 + m1.eExpand()).logarithm();
-
-	return softplus_val;
+    double softplus(double x) {
+    if (x > 0) {
+        return x + log1p(exp(-x));
+    } else {
+        return log1p(exp(x));
     }
+}
 
-    void layer_calc_forwardprop(int size_next, int size_current, float weights[][MAX_COL_ONE], float biases[], float activation[], float resultant[1][MAX_COL_ONE]){
+
+     void layer_calc_forwardprop(int size_next, int size_current, float weights[][MAX_COL_ONE], float biases[], float activation[], float resultant[1][MAX_COL_ONE]){
 	   // Weights are going to have dimensions [size_current][size_next]
 	   // biases are going to have dimensions [size_next]
 	   // activation -> [size_current]
