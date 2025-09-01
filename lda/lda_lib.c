@@ -42,5 +42,10 @@ double** transpose(double** matrix, int rows, int cols){
 	return transposed_matrix;
 }
 
+double** find_transpose_per_class(Cluster* c, int num_of_features){
+	double** transpose_matrix= transpose(c->matrix, c->num_of_points, num_of_features);
+	return transpose_matrix;
+}
+
 
 
