@@ -47,5 +47,29 @@ double** find_transpose_per_class(Cluster* c, int num_of_features){
 	return transpose_matrix;
 }
 
+double** matrix_multiplication(double** matrix_one, double** matrix_two, int row_one, int row_two, int col_one, int col_two){
+	if(col_one != row_two) return NULL;
+	double** product_matrix = (double**)malloc(sizeof(double*)*col_two);
+	for(int i =0; i<col_two; i++){
+		product_matrix[i] = (double*)malloc(sizeof(double)*row_one);
+	}
+
+	for(int i=0; i<row_one; i++){
+		for(int k =0; k<col_two; k++){
+			product_matrix[i][k]=0;
+		}
+	}
+
+	for(int i =0; i<row_one; i++){
+		for(int k =0; k<col_two; k++){
+			for(int j =0; j<col_one; j++){
+				product_matrix[i][k] += matrix_one[i][j] * matrix_two[j][k];
+			}
+		}
+	}
+	return product_matrix;
+}
+double** standard_deviation
+
 
 
