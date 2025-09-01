@@ -2,6 +2,7 @@
 #define MAX 100
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef struct Cluster{
 	char* name;
@@ -69,7 +70,22 @@ double** matrix_multiplication(double** matrix_one, double** matrix_two, int row
 	}
 	return product_matrix;
 }
-double** standard_deviation
+
+double standard_deviation(double** matrix, double* mean_vector, int num_of_points, int num_of_features) {
+    double sum_sq = 0.0;
+
+    for (int i = 0; i < num_of_points; i++) {
+        for (int j = 0; j < num_of_features; j++) {
+            double diff = matrix[i][j] - mean_vector[j];
+            sum_sq += diff * diff;
+        }
+    }
+
+    double variance = sum_sq / num_of_points; 
+    return sqrt(variance); 
+}
+
+
 
 
 
