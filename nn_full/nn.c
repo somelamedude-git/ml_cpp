@@ -70,7 +70,38 @@ void transpose_singleD(double arr[], int length, double transpose_arr[][SIZE]){
 	}
 }
 
-void feed_forward(Network net, double input[][1], double zs[][1]){
+void matrix_multiplication(
+    float matrix_one[][SIZE],
+    float matrix_two[][SIZE],
+    float product_matrix[][SIZE],
+    int row_one, int col_one, int row_two, int col_two
+) {
+    if (col_one != row_two) {
+        printf("Error: col_one must equal row_two\n");
+        return;
+    }
+
+    for(int i = 0; i < row_one; i++)
+        for(int k = 0; k < col_two; k++)
+            product_matrix[i][k] = 0;
+
+    for(int i = 0; i < row_one; i++) {
+        for(int k = 0; k < col_two; k++) {
+            for(int j = 0; j < col_one; j++) {
+                product_matrix[i][k] += matrix_one[i][j] * matrix_two[j][k];
+            }
+        }
+    }
+}
+
+
+void feed_forward(Network net, double input[], double zs[][1]){ // input has to be copied either way, no point of taking a transpose
+	int size_of_input = net.neurons_per_layer[0];
+	for(int i =0; i<size_of_input; i++){
+		net.activations[0][i][0] = input[i];
+	}
+
+	
 
 
 
