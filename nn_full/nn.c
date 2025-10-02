@@ -153,9 +153,38 @@ void compute_cost_derivative(Network net, double expected_output[][1], double ou
 	matrix_subt(output, expected_output, rows, 1, derivative_matrix);
 }
 
+void hadamard_matrix_mult(double matrix_one[][SIZE], double matrix_two[][SIZE], int rows, int cols, double product_matrix[][SIZE]){
+	for(int i =0; i<rows; i++){
+		for(int j =0; j<cols; j++){
+			product_matrix[i][j] = matrix_one[i][j] * matrix_two[i][j];
+		}
+	}
+}
 	
 void backprop(Network net, double input[][1], double output[][1], int input_size, int output_size){
 	feed_forward(net, input);
+	int num_neurons = net.neurons_per_layer[net.num_of_layers-1];
+
+	double curr_z[num_neurons][1] = {0};
+
+	for(int j =0; j<num_of_neurons; j++){
+		curr_z[j][0] = net.z_s[net.num_of_layers-2][j][0];
+	}
+
+	double derivative_array[num_neurons][1] = {0};
+	sigmoid_derivative_list(curr_z, num_neurons, derivative_array);
+
+	// derivative array is one of the main things, don't fuck it up
+	
+	double output_predicted[num_neurons][1] = {0};
+	for(int j =0; j<num_neurons; j++){
+		output_predicted[j][0] = net.activations[net.num_of_layers-1][j][0];
+	}
+
+	double derivative_matrix[num_of_neurons][1] = {0};
+	compute_cost_derivative(net, output, output_predicted, derivative_matrix);
+
+	
 
 	
 	
