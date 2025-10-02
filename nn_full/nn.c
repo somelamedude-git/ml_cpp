@@ -22,29 +22,40 @@ Network initialize_network(int num_layers, int[] neuron_per_layer){
 	return net;
 }
 
-void sigmoid(double x, double sig){
-	sig = 1.0/(1.0 + exp(-x));
+double sigmoid(double x){
+double	sig = 1.0/(1.0 + exp(-x));
+	return sig;
 }
 
-void sigmoid_derivative(double x, double derivative){
+double sigmoid_derivative(double x){
 	double derivative = exp(-x)/((1+exp(-x))*(1+exp(-x)));
 
 	return derivative;
 }
 
-void sigmoid_list(int x_list[], int size_of_list, int activated_array[]){
+void sigmoid_list(double x_list[], int size_of_list, double activated_array[]){
 	for(int i =0; i<size_of_list; i++){
-		int x = 0;
-		sigmoid(x_list[i], x);
-		activated_array[i] = x;
+		activated_array[i] = sigmoid(x_list[i]);
 	}
 }
 
-void sigmoid_derivative_list(int x_list[], int size_of_list, int derivative_array[]){
+void sigmoid_derivative_list(double x_list[], int size_of_list, double derivative_array[]){
 	for(int i =0; i<size_of_list; i++){
-		int x =0;
-		sigmoid_derivative(x_list[i], x);
-		derivative_array[i] = x;
+		derivative_array[i] = sigmoid_derivative(x_list[i]);
+	}
+}
+
+void transpose(double arr[][SIZE], int rows, int cols, double transpose_arr[][SIZE]){
+	for(int i =0; i<rows; i++){
+		for(int j =0; j<cols; j++){
+			transpose_arr[j][i] = arr[i][j];
+		}
+	}
+}
+
+void transpose_singleD(double arr[], int length, double transpose_arr[][SIZE]){
+	for(int i =0; i<length; i++){
+		transpose_arr[0][i] = arr[i];
 	}
 }
 
