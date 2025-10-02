@@ -123,6 +123,10 @@ void feed_forward(Network net, double activation_input[][1]){ // input has to be
 		matrix_addition(bias[i], z, weight_cols, 1, addition_matrix);
 		z = addition_matrix;
 
+		for(int j =0; j<weight_cols; j++){
+			net.z_s[i][j][0] = z[j][0];
+		}
+
 		double activated_output[weight_cols][1] = {0};
 		sigmoid_list(z, weight_cols, activated_output);
 
@@ -134,9 +138,26 @@ void feed_forward(Network net, double activation_input[][1]){ // input has to be
 		size_of_input = weight_cols;
 	}
 }
-		
-	
 
+void matrix_subt(double matrix_one[][SIZE], double matrix_two[][SIZE], int rows, int cols, double difference_matrix[][SIZE]){
+	for(int i =0; i<rows; i++){
+		for(int j =0; j<cols; j++){
+			difference_matrix[i][j] = matrix_one[i][j] - matrix_two[i][j];
+		}
+	}
+}
+
+
+void compute_cost_derivative(Network net, double expected_output[][1], double output[][1], double derivative_matrix[][1]){
+	int rows = net.neurons_per_layer[net.num_of_layers-1];
+	matrix_subt(output, expected_output, rows, 1, derivative_matrix);
+}
+
+	
+void backprop(Network net, double input[][1], double output[][1], int input_size, int output_size){
+	feed_forward(net, input);
+
+	
 	
 	
 
