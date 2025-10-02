@@ -107,7 +107,7 @@ void matrix_addition(double matrix_one[][SIZE], double matrix_two[][SIZE], int r
 void feed_forward(Network net, double activation_input[][1]){ // input has to be copied either way, no point of taking a transpose
 	int size_of_input = net.neurons_per_layer[0];
 	for(int i =0; i<size_of_input; i++){
-		net.activations[0][i][0] = input[i];
+		net.activations[0][i][0] = input[i][0];
 	}
 
 	for(int i =0; i<net.num_of_layers-1; i++){
