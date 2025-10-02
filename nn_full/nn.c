@@ -8,16 +8,27 @@
 #define MAX_NUM_LAYERS 4
 
 typedef struct Network{
-	int neurons_per_layer[SIZE];
+	int neurons_per_layer[MAX_NUM_LAYERS];
 	int num_of_layers;
-	int weights[MAX_NUM_LAYERS-1][SIZE][SIZE];
-	int biases[MAX_NUM_LAYERS-1][SIZE][1];
+	double weights[MAX_NUM_LAYERS-1][SIZE][SIZE];
+	double biases[MAX_NUM_LAYERS-1][SIZE][1];
+	double activations[MAX_NUM_LAYERS][SIZE][1];
 } Network;
 
-Network initialize_network(int num_layers, int[] neuron_per_layer){
+Network initialize_network(int num_layers, int neuron_per_layer[]){
 	Network net = {0};
 	net.num_of_layers = num_layers;
-	net.neuron_per_layer = neuron_per_layer;
+
+	for(int i=0; i<num_layers; i++){
+		net.neuron_per_layer[i] = neuron_per_layer[i];
+	}
+
+	for(int i=0; i<net.num_of_layers; i++){
+		int curr_neurons = net.neurons_per_layer[i];
+		for(int j = 0; j<curr_neurons; j++){
+			net.activations[i][j][0] = 0;
+		}
+	}
 
 	return net;
 }
@@ -55,10 +66,11 @@ void transpose(double arr[][SIZE], int rows, int cols, double transpose_arr[][SI
 
 void transpose_singleD(double arr[], int length, double transpose_arr[][SIZE]){
 	for(int i =0; i<length; i++){
-		transpose_arr[0][i] = arr[i];
+		transpose_arr[i][0] = arr[i];
 	}
 }
 
+void feed_forward(Network net, double input[][1], double zs[][1]){
 
 
 
