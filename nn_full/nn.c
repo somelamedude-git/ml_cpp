@@ -13,6 +13,7 @@ typedef struct Network{
 	double weights[MAX_NUM_LAYERS-1][SIZE][SIZE];
 	double biases[MAX_NUM_LAYERS-1][SIZE][1];
 	double activations[MAX_NUM_LAYERS][SIZE][1];
+	double z_s[MAX_NUM_LAYERS-1][SIZE][1];
 } Network;
 
 Network initialize_network(int num_layers, int neuron_per_layer[]){
@@ -44,15 +45,15 @@ double sigmoid_derivative(double x){
 	return derivative;
 }
 
-void sigmoid_list(double x_list[], int size_of_list, double activated_array[]){
+void sigmoid_list(double x_list[][SIZE], int size_of_list, double activated_array[]){
 	for(int i =0; i<size_of_list; i++){
-		activated_array[i] = sigmoid(x_list[i]);
+		activated_array[i][0] = sigmoid(x_list[i][0]);
 	}
 }
 
-void sigmoid_derivative_list(double x_list[], int size_of_list, double derivative_array[]){
+void sigmoid_derivative_list(double x_list[][SIZE], int size_of_list, double derivative_array[]){
 	for(int i =0; i<size_of_list; i++){
-		derivative_array[i] = sigmoid_derivative(x_list[i]);
+		derivative_array[i][0] = sigmoid_derivative(x_list[i][0]);
 	}
 }
 
@@ -94,13 +95,49 @@ void matrix_multiplication(
     }
 }
 
+void matrix_addition(double matrix_one[][SIZE], double matrix_two[][SIZE], int rows, int cols,  double addition_matrix[][SIZE]){
+	for(int i =0; i<rows; i++){
+		for(int j = 0; j<cols; j++){
+			addition_matrix[i][j] = matrix_one[i][j] + matrix_two[i][j];
+		}
+	}
+}
 
-void feed_forward(Network net, double input[], double zs[][1]){ // input has to be copied either way, no point of taking a transpose
+
+void feed_forward(Network net, double activation_input[][1]){ // input has to be copied either way, no point of taking a transpose
 	int size_of_input = net.neurons_per_layer[0];
 	for(int i =0; i<size_of_input; i++){
 		net.activations[0][i][0] = input[i];
 	}
 
+	for(int i =0; i<net.num_of_layers-1; i++){
+		int weight_rows = net.neurons_per_layer[i];
+		int weight_cols = net.neurons_per_layer[i+1];
+
+		double product_matrix[weight_cols][1] = {0}; 
+
+		 matrix_multiplication(net.weights[i], activation_input, product_matrix,  weight_cols, weight_rows, size_of_input, 1,);
+		 z = product_matrix;
+		
+		double addition_matrix[weight_cols][1] = {0};
+		matrix_addition(bias[i], z, weight_cols, 1, addition_matrix);
+		z = addition_matrix;
+
+		double activated_output[weight_cols][1] = {0};
+		sigmoid_list(z, weight_cols, activated_output);
+
+		for(int j =0; j<weight_cols; j++){
+			activation_input[j][0] = activated_output[j][0];
+			net.activations[i+1][j][0] = activated_output[j][0];
+		}
+
+		size_of_input = weight_cols;
+	}
+}
+		
+	
+
+	
 	
 
 
