@@ -209,12 +209,16 @@ void backprop(Network net, double input[][1], double output[][1], int input_size
 	num_neurons = net.neurons_per_layer[net.num_of_layers-2];
 
 	double transpose_act_layer[num_neurons] = {0};
-	transpose_twoD(net.activations[net.num_of_layers-2], num_neurons, transopose_act_layer);
+	transpose_twoD(net.activations[net.num_of_layers-2], num_neurons, transpose_act_layer);
 
 	double nabla_w[net.neurons_per_layer[net.num_of_layers-1]][net.neurons_per_layer[net.num_of_layers-2]] = {0};
+	matrix_multiplication(sigma, transpose_act_layer, nabla_w, net.neurons_per_layer[net.num_of_layers-1], 1, 1, num_neurons);
 
-
-
+	for(int i =0; i<net.neurons_per_layer[net.num_of_layers-1]; i++){
+		for(int j =0; j<num_neurons; j++){
+			net.nabla_w[net.num_of_layers-2][i][j] = nabla_w[i][j];
+		}
+	}
 }
 
 
