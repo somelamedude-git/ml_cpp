@@ -23,7 +23,7 @@ Network initialize_network(int num_layers, int neuron_per_layer[]){
 	net.num_of_layers = num_layers;
 
 	for(int i=0; i<num_layers; i++){
-		net.neuron_per_layer[i] = neuron_per_layer[i];
+		net.neurons_per_layer[i] = neuron_per_layer[i];
 	}
 
 	for(int i=0; i<net.num_of_layers; i++){
@@ -115,7 +115,7 @@ void matrix_addition(double matrix_one[][SIZE], double matrix_two[][SIZE], int r
 void feed_forward(Network net, double activation_input[][1]){ // input has to be copied either way, no point of taking a transpose
 	int size_of_input = net.neurons_per_layer[0];
 	for(int i =0; i<size_of_input; i++){
-		net.activations[0][i][0] = input[i][0];
+		net.activations[0][i][0] = activation_input[i][0];
 	}
 
 	for(int i =0; i<net.num_of_layers-1; i++){
@@ -124,12 +124,19 @@ void feed_forward(Network net, double activation_input[][1]){ // input has to be
 
 		double product_matrix[weight_cols][1] = {0}; 
 
-		 matrix_multiplication(net.weights[i], activation_input, product_matrix,  weight_cols, weight_rows, size_of_input, 1,);
-		 z = product_matrix;
+		 matrix_multiplication(net.weights[i], activation_input, product_matrix,  weight_cols, weight_rows, size_of_input, 1);
+		 double z[weight_cols][1] = {0};
+
+		 for(int j = 0; j<weight_cols; j++){
+			 z[j][0] = product_matrix[j][0];
+		 }
 		
 		double addition_matrix[weight_cols][1] = {0};
 		matrix_addition(bias[i], z, weight_cols, 1, addition_matrix);
-		z = addition_matrix;
+		
+		for(int j =0; j<weight_cols; j++){
+			z[j][0] = addition_matrix[j][0];
+		}
 
 		for(int j =0; j<weight_cols; j++){
 			net.z_s[i][j][0] = z[j][0];
@@ -198,8 +205,16 @@ void backprop(Network net, double input[][1], double output[][1], int input_size
 	for(int j =0; j<num_of_neurons; j++){
 		net.nabla_b[net.num_of_layers-2][j][0] = sigma[j][0];
 	}
-	
-	
+
+	num_neurons = net.neurons_per_layer[net.num_of_layers-2];
+
+	double transpose_act_layer[num_neurons] = {0};
+	transpose_twoD(net.activations[net.num_of_layers-2], num_neurons, transopose_act_layer);
+
+	double nabla_w[net.neurons_per_layer[net.num_of_layers-1]][net.neurons_per_layer[net.num_of_layers-2]] = {0};
+
+
+
 }
 
 
