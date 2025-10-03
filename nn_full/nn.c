@@ -73,7 +73,7 @@ void transpose_singleD(double arr[], int length, double transpose_arr[][SIZE]){
 	}
 }
 
-void transose_twoD(double arr[][1], int length, double transpose_arr[]){
+void transpose_twoD(double arr[][1], int length, double transpose_arr[]){
 	for(int i =0; i<length; i++){
 		transpose_arr[i] = transpose[i][0];
 	}
@@ -132,7 +132,7 @@ void feed_forward(Network net, double activation_input[][1]){ // input has to be
 		 }
 		
 		double addition_matrix[weight_cols][1] = {0};
-		matrix_addition(bias[i], z, weight_cols, 1, addition_matrix);
+		matrix_addition(net.biases[i], z, weight_cols, 1, addition_matrix);
 		
 		for(int j =0; j<weight_cols; j++){
 			z[j][0] = addition_matrix[j][0];
@@ -182,7 +182,7 @@ void backprop(Network net, double input[][1], double output[][1], int input_size
 
 	double curr_z[num_neurons][1] = {0};
 
-	for(int j =0; j<num_of_neurons; j++){
+	for(int j =0; j<num_neurons; j++){
 		curr_z[j][0] = net.z_s[net.num_of_layers-2][j][0];
 	}
 
@@ -200,7 +200,7 @@ void backprop(Network net, double input[][1], double output[][1], int input_size
 	compute_cost_derivative(net, output, output_predicted, derivative_matrix);
 
 	double sigma[num_neurons][1] = {0};
-	hadamard_matrix(derivative_matrix, derivative_array, num_neurons, 1, sigma);
+	hadamard_matrix_mult(derivative_matrix, derivative_array, num_neurons, 1, sigma);
 
 	for(int j =0; j<num_of_neurons; j++){
 		net.nabla_b[net.num_of_layers-2][j][0] = sigma[j][0];
