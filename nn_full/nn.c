@@ -80,9 +80,9 @@ void transpose_twoD(double arr[][1], int length, double transpose_arr[]){
 }
 
 void matrix_multiplication(
-    float matrix_one[][SIZE],
-    float matrix_two[][SIZE],
-    float product_matrix[][SIZE],
+    double matrix_one[][SIZE],
+    double matrix_two[][SIZE],
+    double product_matrix[][SIZE],
     int row_one, int col_one, int row_two, int col_two
 ) {
     if (col_one != row_two) {
