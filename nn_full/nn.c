@@ -14,6 +14,8 @@ typedef struct Network{
 	double biases[MAX_NUM_LAYERS-1][SIZE][1];
 	double activations[MAX_NUM_LAYERS][SIZE][1];
 	double z_s[MAX_NUM_LAYERS-1][SIZE][1];
+	double nabla_b[MAX_NUM_LAYERS-1][SIZE][1];
+	double nabla_w[MAX_NUM_LAYERS-1][SIZE][SIZE];
 } Network;
 
 Network initialize_network(int num_layers, int neuron_per_layer[]){
@@ -68,6 +70,12 @@ void transpose(double arr[][SIZE], int rows, int cols, double transpose_arr[][SI
 void transpose_singleD(double arr[], int length, double transpose_arr[][SIZE]){
 	for(int i =0; i<length; i++){
 		transpose_arr[i][0] = arr[i];
+	}
+}
+
+void transose_twoD(double arr[][1], int length, double transpose_arr[]){
+	for(int i =0; i<length; i++){
+		transpose_arr[i] = transpose[i][0];
 	}
 }
 
@@ -183,6 +191,18 @@ void backprop(Network net, double input[][1], double output[][1], int input_size
 
 	double derivative_matrix[num_of_neurons][1] = {0};
 	compute_cost_derivative(net, output, output_predicted, derivative_matrix);
+
+	double sigma[num_neurons][1] = {0};
+	hadamard_matrix(derivative_matrix, derivative_array, num_neurons, 1, sigma);
+
+	for(int j =0; j<num_of_neurons; j++){
+		net.nabla_b[net.num_of_layers-2][j][0] = sigma[j][0];
+	}
+	
+	
+}
+
+
 
 	
 
