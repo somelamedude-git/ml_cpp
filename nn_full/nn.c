@@ -187,24 +187,13 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 	feed_forward(net, input);
 	int num_neurons = net.neurons_per_layer[net.num_of_layers-1];
 
-	double** curr_z = create_matrix(num_neurons, 1);
-
-	for(int j =0; j<num_neurons; j++){
-		curr_z[j][0] = net.z_s[net.num_of_layers-2][j][0];
-	}
-
 	double** derivative_array = create_matrix(num_neurons, 1);
-	sigmoid_derivative_list(curr_z, num_neurons, derivative_array);
+	sigmoid_derivative_list(net.z_s[net.num_of_layers-2], num_neurons, derivative_array);
 
 	// derivative array is one of the main things, don't fuck it up
 	
-	double** output_predicted = create_matrix(num_neurons, 1);
-	for(int j =0; j<num_neurons; j++){
-		output_predicted[j][0] = net.activations[net.num_of_layers-1][j][0];
-	}
-
 	double** derivative_matrix = create_matrix(num_neurons, 1);
-	compute_cost_derivative(net, output, output_predicted, derivative_matrix);
+	compute_cost_derivative(net, output, net.activations[net.num_of_layers-1], derivative_matrix);
 
 	double** sigma = create_matrix(num_neurons, 1);
 	hadamard_matrix_mult(derivative_matrix, derivative_array, num_neurons, 1, sigma);
@@ -228,13 +217,9 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 	}
 
 	for(int k = net.num_of_layers-2; k>=1; k--){
-		double** z = create_matrix(net.neurons_per_layer[k], 1);
-		for(int i =0; i<net.neurons_per_layer[k]; i++){
-			z[i][0] = net.z_s[k-1][i][0];
-		}
 
 		double** z_sigmoid_derivative = create_matrix(net.neurons_per_layer[k], 1);
-		sigmoid_derivative_list(z, net.neurons_per_layer[k], z_sigmoid_derivative);
+		sigmoid_derivative_list(net.z_s[k-1], net.neurons_per_layer[k], z_sigmoid_derivative);
 		
 		int weight_rows = net.neurons_per_layer[k+1];
 		int weight_cols = net.neurons_per_layer[k];
