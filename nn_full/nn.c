@@ -67,18 +67,6 @@ void transpose(double** arr, int rows, int cols, double** transpose_arr){
 	}
 }
 
-void transpose_singleD(double* arr, int length, double** transpose_arr){
-	for(int i =0; i<length; i++){
-		transpose_arr[i][0] = arr[i];
-	}
-}
-
-void transpose_twoD(double** arr, int length, double** transpose_arr){
-	for(int i =0; i<length; i++){
-		transpose_arr[0][i] = arr[i][0];
-	}
-}
-
 double** create_matrix(int rows, int cols){
 	double** matrix = (double**)malloc(sizeof(double*) * rows);
 	for(int i =0; i<rows; i++){
@@ -205,19 +193,26 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 	num_neurons = net.neurons_per_layer[net.num_of_layers-2];
 
 	double** transpose_act_layer = create_matrix(1, num_neurons);
-	transpose_twoD(net.activations[net.num_of_layers-2], num_neurons, transpose_act_layer);
+	transpose(net.activations[net.num_of_layers-2], num_neurons, 1, transpose_act_layer);
 
 	matrix_multiplication(sigma, transpose_act_layer, net.nabla_w[net.num_of_layers-2], net.neurons_per_layer[net.num_of_layers-1], 1, 1, num_neurons);
 
+	int max_neurons = net.neurons_per_layer[0];
+	for(int i =0; i<net.num_of_layers; i++){
+		if(max_neurons<net.neurons_per_layer[i]) max_neurons = net.neurons_per_layer[i];
+	}
+
+	double** z_sigmoid_derivative = create_matrix(max_neurons, 1);
+	double** activations_transpose = create_matrix(1, max_neurons);
+	double** weight_matrix_transpose = create_matrix(max_neurons, max_neurons);
+
 	for(int k = net.num_of_layers-2; k>=1; k--){
 
-		double** z_sigmoid_derivative = create_matrix(net.neurons_per_layer[k], 1);
 		sigmoid_derivative_list(net.z_s[k-1], net.neurons_per_layer[k], z_sigmoid_derivative);
 		
 		int weight_rows = net.neurons_per_layer[k+1];
 		int weight_cols = net.neurons_per_layer[k];
 
-		double** weight_matrix_transpose = create_matrix(weight_cols, weight_rows);
 		transpose(net.weights[k], weight_rows, weight_cols, weight_matrix_transpose);
 
 		matrix_multiplication(weight_matrix_transpose, sigma, sigma, weight_cols, weight_rows, net.neurons_per_layer[k+1], 1);
@@ -227,8 +222,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 			net.nabla_b[k-1][i][0] = sigma[i][0];
 		}
 
-		double** activations_transpose = create_matrix(1, net.neurons_per_layer[k-1]);
-		transpose_twoD(net.activations[k-1], net.neurons_per_layer[k-1], activations_transpose);
+		transpose(net.activations[k-1], net.neurons_per_layer[k-1], 1, activations_transpose);
 
 		 weight_rows = net.neurons_per_layer[k];
                  weight_cols = net.neurons_per_layer[k-1];
