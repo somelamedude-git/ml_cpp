@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include <math.h>
+#include <time.h>
 
 #define SIZE 10
 #define MAX_NUM_LAYERS 4
@@ -231,7 +232,7 @@ void backprop(Network net, double** input, double** output){
 	}
 }
 
-void shuffle_data(double*** data, double*** lables, int num_samples){
+void shuffle_data(double*** data, double*** labels, int num_samples){
 	srand(time(NULL));
 	for(int i = num_samples-1; i>0; i--){
 		int j = rand() % (i+1);
@@ -250,13 +251,13 @@ double*** initialize_nabla(int* size_array); // initialize this by 0
 void nabla_addition(Network net, double*** nabla_w, double*** nabla_b){
 	
 	for(int k =0; k<net.num_of_layers-1; k++){
-		matrix_addition(nabla_w[k], net.delta_nabla_w[k], net.num_of_neurons[k+1], net.num_of_neurons[k], nabla_w[k]);
-		matrix_addition(nabla_b[k], net.delta_nabla_b[k], net.num_of_neurons[k+1], 1, nabla_b[k]);
+		matrix_addition(nabla_w[k], net.delta_nabla_w[k], net.neurons_per_layer[k+1], net.neurons_per_layer[k], nabla_w[k]);
+		matrix_addition(nabla_b[k], net.delta_nabla_b[k], net.neurons_per_layer[k+1], 1, nabla_b[k]);
 	}
 }
 
 void param_tuning(Network net, double*** nabla_w, double*** nabla_b){
-	for(int i =0; k<net.num_of_layers-1; k++){
+	for(int k =0; k<net.num_of_layers-1; k++){
 		matrix_addition(net.weights[k], nabla_w[k], net.neurons_per_layer[k+1], net.neurons_per_layer[k], net.weights[k]);
 		matrix_addition(net.biases[k], nabla_b[k], net.neurons_per_layer[k+1], 1, net.biases[k]);
 	}
