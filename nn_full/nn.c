@@ -14,8 +14,8 @@ typedef struct Network{
 	double*** biases;
 	double*** activations;
 	double*** z_s;
-	double*** nabla_b;
-	double*** nabla_w;
+	double*** delta_nabla_b;
+	double*** delta_nabla_w;
 } Network;
 
 Network initialize_network(int num_layers, int neuron_per_layer[]){
@@ -186,7 +186,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 	hadamard_matrix_mult(derivative_matrix, derivative_array, num_neurons, 1, sigma);
 
 	for(int j =0; j<num_neurons; j++){
-		net.nabla_b[net.num_of_layers-2][j][0] = sigma[j][0];
+		net.delta_nabla_b[net.num_of_layers-2][j][0] = sigma[j][0];
 	}
 
 	num_neurons = net.neurons_per_layer[net.num_of_layers-2];
@@ -194,7 +194,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 	double** transpose_act_layer = create_matrix(1, num_neurons);
 	transpose(net.activations[net.num_of_layers-2], num_neurons, 1, transpose_act_layer);
 
-	matrix_multiplication(sigma, transpose_act_layer, net.nabla_w[net.num_of_layers-2], net.neurons_per_layer[net.num_of_layers-1], 1, 1, num_neurons);
+	matrix_multiplication(sigma, transpose_act_layer, net.delta_nabla_w[net.num_of_layers-2], net.neurons_per_layer[net.num_of_layers-1], 1, 1, num_neurons);
 
 	int max_neurons = net.neurons_per_layer[0];
 	for(int i =0; i<net.num_of_layers; i++){
@@ -218,7 +218,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 		hadamard_matrix_mult(sigma, z_sigmoid_derivative, weight_cols, 1, sigma);
 
 		for(int i =0; i<net.neurons_per_layer[k]; i++){
-			net.nabla_b[k-1][i][0] = sigma[i][0];
+			net.delta_nabla_b[k-1][i][0] = sigma[i][0];
 		}
 
 		transpose(net.activations[k-1], net.neurons_per_layer[k-1], 1, activations_transpose);
@@ -226,7 +226,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 		 weight_rows = net.neurons_per_layer[k];
                  weight_cols = net.neurons_per_layer[k-1];
 
-		matrix_multiplication(sigma, activations_transpose, net.nabla_w[k-1], net.neurons_per_layer[k], 1, 1, net.neurons_per_layer[k-1]);
+		matrix_multiplication(sigma, activations_transpose, net.delta_nabla_w[k-1], net.neurons_per_layer[k], 1, 1, net.neurons_per_layer[k-1]);
 
 	}
 }
@@ -245,5 +245,13 @@ void shuffle_data(double*** data, double*** lables, int num_samples){
 	}
 }
 
+double*** initialize_nabla(int* size_array);
 void sgd(Network net,int epochs, double*** training_data, double*** labels, int num_samples, int batch_size, double learning_rate){
+	for(int i =0; i<epochs; i++){
+		shuffle_data(training_data, labels, num_samples);
+
+		double*** nabla_w = initialize_nabla();
+		double*** nabla_b = initialize_nabla();
+
+		for(int j =0; j<num_samples; j++){
 
