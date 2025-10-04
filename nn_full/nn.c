@@ -131,13 +131,13 @@ void feed_forward(Network net, double** activation_input){ // input has to be co
 			net. z_s[i][j][0] = product_matrix[j][0];
 		 }
 		
-		matrix_addition(net.biases[i], z, weight_cols, 1, addition_matrix);
+		matrix_addition(net.biases[i], product_matrix, weight_cols, 1, addition_matrix);
 		
 		for(int j =0; j<weight_cols; j++){
 			net.z_s[i][j][0] = addition_matrix[j][0];
 		}
 
-		sigmoid_list(z, weight_cols, activated_output);
+		sigmoid_list(net.z_s[i], weight_cols, activated_output);
 
 		for(int j =0; j<weight_cols; j++){
 			activation_input[j][0] = activated_output[j][0];
@@ -230,3 +230,20 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 
 	}
 }
+
+void shuffle_data(double*** data, double*** lables, int num_samples){
+	srand(time(NULL));
+	for(int i = num_samples-1; i>0; i--){
+		int j = rand() % (i+1);
+		double** temp_data = data[i];
+		data[i] = data[j];
+		data[j] = temp_data;
+
+		double** temp_label = labels[i];
+		labels[i] = labels[j];
+		labels[j] = temp_label;
+	}
+}
+
+void sgd(Network net,int epochs, double*** training_data, double*** labels, int num_samples, int batch_size, double learning_rate){
+
