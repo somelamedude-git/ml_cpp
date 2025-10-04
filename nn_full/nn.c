@@ -316,7 +316,7 @@ double*** initialize_nabla(int* size_array, int num_of_layers, bool is_bias){
 		for(int k = 0; k<num_of_layers-1; k++){
 			weights[k] = (double**)malloc(sizeof(double*)*size_array[k+1]);
 			for(int j =0; j<size_array[k+1]; j++){
-				weights[k][j] = (double*)calloc(size_of_array[k], sizeof(double));
+				weights[k][j] = (double*)calloc(size_array[k], sizeof(double));
 			}
 		}
 		return weights;
@@ -354,6 +354,17 @@ void vector_list_multiplication(double multiplicand, int* dimensions, int num_of
 	}
 }
 
+void reset_nabla(double*** nabla_w, double*** nabla_b, int* size_array, int num_layers){
+	for(int i =0; i<num_layers-1; i++){
+		for(int j =0; j<size_array[i+1]; j++){
+			nabla_b[i][j][0] = 0;
+			for(int k =0; k<size_array[i]; k++){
+				nabla_w[i][j][k] = 0;
+			}
+		}
+	}
+}
+
 void sgd(Network net,int epochs, double*** training_data, double*** labels, int num_samples, int batch_size, double learning_rate){
 	for(int i =0; i<epochs; i++){
 		shuffle_data(training_data, labels, num_samples);
@@ -369,6 +380,8 @@ void sgd(Network net,int epochs, double*** training_data, double*** labels, int 
 				double mult = -1*learning_rate/batch_size;
 				vector_list_multiplication(mult, net.neurons_per_layer, net.num_of_layers, nabla_w, nabla_b);
 				param_tuning(net, nabla_w, nabla_b);
+
+				reset_nabla(nabla_w, nabla_b, net.neurons_per_layer, net.num_of_layers);
 			}
 		}
 	}
