@@ -20,21 +20,75 @@ typedef struct Network{
 } Network;
 
 Network initialize_network(int num_layers, int neuron_per_layer[]){
-	Network net = {0};
-	net.num_of_layers = num_layers;
-
-	for(int i=0; i<num_layers; i++){
-		net.neurons_per_layer[i] = neuron_per_layer[i];
-	}
-
-	for(int i=0; i<net.num_of_layers; i++){
-		int curr_neurons = net.neurons_per_layer[i];
-		for(int j = 0; j<curr_neurons; j++){
-			net.activations[i][j][0] = 0;
-		}
-	}
-
-	return net;
+    Network net = {0};
+    net.num_of_layers = num_layers;
+    net.neurons_per_layer = (int*)malloc(sizeof(int) * num_layers);
+    for(int i = 0; i < num_layers; i++){
+        net.neurons_per_layer[i] = neuron_per_layer[i];
+    }
+    
+    srand(time(NULL));
+    
+    net.weights = (double***)malloc(sizeof(double**) * (num_layers - 1));
+    for(int i = 0; i < num_layers - 1; i++){
+        int rows = neuron_per_layer[i+1];
+        int cols = neuron_per_layer[i];
+        net.weights[i] = (double**)malloc(sizeof(double*) * rows);
+        for(int j = 0; j < rows; j++){
+            net.weights[i][j] = (double*)malloc(sizeof(double) * cols);
+            for(int k = 0; k < cols; k++){
+                net.weights[i][j][k] = ((double)rand() / RAND_MAX - 0.5) * 0.1; 
+            }
+        }
+    }
+    
+    net.biases = (double***)malloc(sizeof(double**) * (num_layers - 1));
+    for(int i = 0; i < num_layers - 1; i++){
+        int rows = neuron_per_layer[i+1];
+        net.biases[i] = (double**)malloc(sizeof(double*) * rows);
+        for(int j = 0; j < rows; j++){
+            net.biases[i][j] = (double*)calloc(1, sizeof(double));
+        }
+    }
+    
+    net.activations = (double***)malloc(sizeof(double**) * num_layers);
+    for(int i = 0; i < num_layers; i++){
+        int rows = neuron_per_layer[i];
+        net.activations[i] = (double**)malloc(sizeof(double*) * rows);
+        for(int j = 0; j < rows; j++){
+            net.activations[i][j] = (double*)calloc(1, sizeof(double));
+        }
+    }
+    
+    net.z_s = (double***)malloc(sizeof(double**) * (num_layers - 1));
+    for(int i = 0; i < num_layers - 1; i++){
+        int rows = neuron_per_layer[i+1];
+        net.z_s[i] = (double**)malloc(sizeof(double*) * rows);
+        for(int j = 0; j < rows; j++){
+            net.z_s[i][j] = (double*)calloc(1, sizeof(double));
+        }
+    }
+    
+    net.delta_nabla_w = (double***)malloc(sizeof(double**) * (num_layers - 1));
+    for(int i = 0; i < num_layers - 1; i++){
+        int rows = neuron_per_layer[i+1];
+        int cols = neuron_per_layer[i];
+        net.delta_nabla_w[i] = (double**)malloc(sizeof(double*) * rows);
+        for(int j = 0; j < rows; j++){
+            net.delta_nabla_w[i][j] = (double*)calloc(cols, sizeof(double));
+        }
+    }
+    
+    net.delta_nabla_b = (double***)malloc(sizeof(double**) * (num_layers - 1));
+    for(int i = 0; i < num_layers - 1; i++){
+        int rows = neuron_per_layer[i+1];
+        net.delta_nabla_b[i] = (double**)malloc(sizeof(double*) * rows);
+        for(int j = 0; j < rows; j++){
+            net.delta_nabla_b[i][j] = (double*)calloc(1, sizeof(double));
+        }
+    }
+    
+    return net;
 }
 
 double sigmoid(double x){
@@ -260,9 +314,9 @@ double*** initialize_nabla(int* size_array, int num_of_layers, bool is_bias){
 	else{
 		double*** weights = (double***)malloc(sizeof(double**)*(num_of_layers-1));
 		for(int k = 0; k<num_of_layers-1; k++){
-			bias[k] = (double**)malloc(sizeof(double*)*size_array[k+1]);
+			weights[k] = (double**)malloc(sizeof(double*)*size_array[k+1]);
 			for(int j =0; j<size_array[k+1]; j++){
-				bias[k][j] = (double*)calloc(size_of_array[k], sizeof(double));
+				weights[k][j] = (double*)calloc(size_of_array[k], sizeof(double));
 			}
 		}
 		return weights;
