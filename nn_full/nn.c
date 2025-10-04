@@ -47,13 +47,13 @@ double sigmoid_derivative(double x){
 	return derivative;
 }
 
-void sigmoid_list(double x_list[][1], int size_of_list, double activated_array[][1]){
+void sigmoid_list(double** x_list, int size_of_list, double** activated_array){
 	for(int i =0; i<size_of_list; i++){
 		activated_array[i][0] = sigmoid(x_list[i][0]);
 	}
 }
 
-void sigmoid_derivative_list(double x_list[][1], int size_of_list, double derivative_array[][1]){
+void sigmoid_derivative_list(double** x_list, int size_of_list, double** derivative_array){
 	for(int i =0; i<size_of_list; i++){
 		derivative_array[i][0] = sigmoid_derivative(x_list[i][0]);
 	}
@@ -129,16 +129,16 @@ void feed_forward(Network net, double** activation_input){ // input has to be co
 		int weight_rows = net.neurons_per_layer[i];
 		int weight_cols = net.neurons_per_layer[i+1];
 
-		double product_matrix[weight_cols][1];
+		double** product_matrix= create_matrix(weight_cols, 1);
 
 		 matrix_multiplication(net.weights[i], activation_input, product_matrix,  weight_cols, weight_rows, size_of_input, 1);
-		 double z[weight_cols][1];
+		 double** z = create_matrix(weight_cols,1);
 
 		 for(int j = 0; j<weight_cols; j++){
 			 z[j][0] = product_matrix[j][0];
 		 }
 		
-		double addition_matrix[weight_cols][1];
+		double** addition_matrix = create_matrix(weight_cols, 1);
 		matrix_addition(net.biases[i], z, weight_cols, 1, addition_matrix);
 		
 		for(int j =0; j<weight_cols; j++){
