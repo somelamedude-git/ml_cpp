@@ -170,7 +170,7 @@ void hadamard_matrix_mult(double** matrix_one, double** matrix_two, int rows, in
 	}
 }
 	
-void backprop(Network net, double** input, double** output, int input_size, int output_size){
+void backprop(Network net, double** input, double** output){
 	feed_forward(net, input);
 	int num_neurons = net.neurons_per_layer[net.num_of_layers-1];
 
@@ -245,7 +245,16 @@ void shuffle_data(double*** data, double*** lables, int num_samples){
 	}
 }
 
-double*** initialize_nabla(int* size_array);
+double*** initialize_nabla(int* size_array); // initialize this by 0
+
+void nabla_addition(Network net, double*** nabla_w, double*** nabla_b){
+	
+	for(int k =0; k<net.num_of_layers-1; k++){
+		matrix_addition(nabla_w[k], net.delta_nabla_w[k], net.num_of_neurons[k+1], net.num_of_neurons[k], nabla_w[k]);
+		matrix_addition(nabla_b[k], net.delta_nabla_b[k], net.num_of_neurons[k+1], 1, nabla_b[k]);
+	}
+}
+
 void sgd(Network net,int epochs, double*** training_data, double*** labels, int num_samples, int batch_size, double learning_rate){
 	for(int i =0; i<epochs; i++){
 		shuffle_data(training_data, labels, num_samples);
@@ -254,4 +263,6 @@ void sgd(Network net,int epochs, double*** training_data, double*** labels, int 
 		double*** nabla_b = initialize_nabla();
 
 		for(int j =0; j<num_samples; j++){
+			backprop(net, training_data[j], labels[j]);
+
 
