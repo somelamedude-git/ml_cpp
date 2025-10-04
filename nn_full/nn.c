@@ -9,7 +9,7 @@
 #define MAX_NUM_LAYERS 4
 
 typedef struct Network{
-	int neurons_per_layer[MAX_NUM_LAYERS];
+	int* neurons_per_layer;
 	int num_of_layers;
 	double*** weights;
 	double*** biases;
@@ -246,7 +246,29 @@ void shuffle_data(double*** data, double*** labels, int num_samples){
 	}
 }
 
-double*** initialize_nabla(int* size_array); // initialize this by 0
+double*** initialize_nabla(int* size_array, int num_of_layers, bool is_bias){
+	if(is_bias){
+		double*** bias = (double***)malloc(sizeof(double**)* (num_of_layers-1));
+		for(int k =0; k<num_of_layers-1; k++){
+			bias[k] = (double**)malloc(sizeof(double*) * size_array[k+1]);
+			for(int j =0; j<size_array[k+1]; j++){
+				bias[k][j] = (double*)calloc(1, sizeof(double));
+			}
+		}
+		return bias;
+	}
+	else{
+		double*** weights = (double***)malloc(sizeof(double**)*(num_of_layers-1));
+		for(int k = 0; k<num_of_layers-1; k++){
+			bias[k] = (double**)malloc(sizeof(double*)*size_array[k+1]);
+			for(int j =0; j<size_array[k+1]; j++){
+				bias[k][j] = (double*)calloc(size_of_array[k], sizeof(double));
+			}
+		}
+		return weights;
+	}
+}
+
 
 void nabla_addition(Network net, double*** nabla_w, double*** nabla_b){
 	
@@ -282,8 +304,8 @@ void sgd(Network net,int epochs, double*** training_data, double*** labels, int 
 	for(int i =0; i<epochs; i++){
 		shuffle_data(training_data, labels, num_samples);
 
-		double*** nabla_w = initialize_nabla();
-		double*** nabla_b = initialize_nabla();
+		double*** nabla_w = initialize_nabla(net.neurons_per_layer, net.num_of_layers, false);
+		double*** nabla_b = initialize_nabla(net.neurons_per_layer, net.num_of_layers, true);
 
 		for(int j =0; j<num_samples; j++){
 			backprop(net, training_data[j], labels[j]);
