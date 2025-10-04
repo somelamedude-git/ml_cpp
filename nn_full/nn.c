@@ -5,9 +5,6 @@
 #include <math.h>
 #include <time.h>
 
-#define SIZE 10
-#define MAX_NUM_LAYERS 4
-
 typedef struct Network{
 	int* neurons_per_layer;
 	int num_of_layers;
@@ -18,6 +15,14 @@ typedef struct Network{
 	double*** delta_nabla_b;
 	double*** delta_nabla_w;
 } Network;
+
+void free_memory_twoD(double** matrix, int rows, int cols){
+	for(int i =0;i<rows; i++){
+		free(matrix[i]);
+	}
+	free(matrix);
+}
+
 
 Network initialize_network(int num_layers, int neuron_per_layer[]){
     Network net = {0};
@@ -201,6 +206,9 @@ void feed_forward(Network net, double** activation_input){ // input has to be co
 
 		size_of_input = weight_cols;
 	}
+	free_memory_twoD(addition_matrix, max_neurons, 1);
+	free_memory_twoD(activated_output, max_neurons, 1);
+	free_memory_twoD(product_matrix, max_neurons, 1);
 }
 
 void matrix_subt(double** matrix_one, double** matrix_two, int rows, int cols, double** difference_matrix){
@@ -284,6 +292,12 @@ void backprop(Network net, double** input, double** output){
 		matrix_multiplication(sigma, activations_transpose, net.delta_nabla_w[k-1], net.neurons_per_layer[k], 1, 1, net.neurons_per_layer[k-1]);
 
 	}
+
+	free_memory_twoD(z_sigmoid_derivative, max_neurons, 1);
+	free_memory_twoD(activations_transpose, 1, max_neurons);
+	free_memory_twoD(weight_matrix_transpose, max_neurons, max_neurons);
+	free_memory_twoD(derivative_array, net.neurons_per_layer[net.num_of_layers-1], 1);
+	free_memory_twoD(derivative_matrix, net.neurons_per_layer[net.num_of_layers-1], 1);
 }
 
 void shuffle_data(double*** data, double*** labels, int num_samples){
