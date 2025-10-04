@@ -81,8 +81,8 @@ void transpose_twoD(double** arr, int length, double** transpose_arr){
 
 double** create_matrix(int rows, int cols){
 	double** matrix = (double**)malloc(sizeof(double*) * rows);
-	for(int i =0; i<cols; i++){
-		matrix[i] = calloc(rows, sizeof(double));
+	for(int i =0; i<rows; i++){
+		matrix[i] = calloc(cols, sizeof(double));
 	}
 	return matrix;
 }
