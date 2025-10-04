@@ -120,22 +120,18 @@ void feed_forward(Network net, double** activation_input){ // input has to be co
 		double** product_matrix= create_matrix(weight_cols, 1);
 
 		 matrix_multiplication(net.weights[i], activation_input, product_matrix,  weight_cols, weight_rows, size_of_input, 1);
-		 double** z = create_matrix(weight_cols,1);
 
 		 for(int j = 0; j<weight_cols; j++){
-			 z[j][0] = product_matrix[j][0];
+			net. z_s[i][j][0] = product_matrix[j][0];
 		 }
 		
 		double** addition_matrix = create_matrix(weight_cols, 1);
 		matrix_addition(net.biases[i], z, weight_cols, 1, addition_matrix);
 		
 		for(int j =0; j<weight_cols; j++){
-			z[j][0] = addition_matrix[j][0];
+			net.z_s[i][j][0] = addition_matrix[j][0];
 		}
 
-		for(int j =0; j<weight_cols; j++){
-			net.z_s[i][j][0] = z[j][0];
-		}
 
 		double** activated_output = create_matrix(weight_cols, 1);
 		sigmoid_list(z, weight_cols, activated_output);
