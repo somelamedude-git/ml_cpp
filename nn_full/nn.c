@@ -255,6 +255,13 @@ void nabla_addition(Network net, double*** nabla_w, double*** nabla_b){
 	}
 }
 
+void param_tuning(Network net, double*** nabla_w, double*** nabla_b){
+	for(int i =0; k<net.num_of_layers-1; k++){
+		matrix_addition(net.weights[k], nabla_w[k], net.neurons_per_layer[k+1], net.neurons_per_layer[k], net.weights[k]);
+		matrix_addition(net.biases[k], nabla_b[k], net.neurons_per_layer[k+1], 1, net.biases[k]);
+	}
+}
+
 void vector_multiplication_matrix(double multiplicand, double** matrix, int rows, int cols){
 	for(int i =0; i<rows; i++){
 		for(int j =0; j<cols; j++){
@@ -281,6 +288,14 @@ void sgd(Network net,int epochs, double*** training_data, double*** labels, int 
 			backprop(net, training_data[j], labels[j]);
 			nabla_addition(net, nabla_w, nabla_b);
 
-			if((j+1)%batch_size == 0 || j==num_samples-1) 
+			if((j+1)%batch_size == 0 || j==num_samples-1){
+				double mult = -1*learning_rate/batch_size;
+				vector_list_multiplication(mult, net.neurons_per_layer, net.num_of_layers, nabla_w, nabla_b);
+				param_tuning(net, nabla_w, nabla_b);
+			}
+		}
+	}
+}
+				
 
 
