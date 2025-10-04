@@ -255,6 +255,21 @@ void nabla_addition(Network net, double*** nabla_w, double*** nabla_b){
 	}
 }
 
+void vector_multiplication_matrix(double multiplicand, double** matrix, int rows, int cols){
+	for(int i =0; i<rows; i++){
+		for(int j =0; j<cols; j++){
+			matrix[i][j] = multiplicand*matrix[i][j];
+		}
+	}
+}
+
+void vector_list_multiplication(double multiplicand, int* dimensions, int num_of_dimensions, double*** nabla_w, double*** nabla_b){
+	for(int k =0; k<num_of_dimensions-1; k++){
+		vector_multiplication_matrix(multiplicand, nabla_w[k], dimensions[k+1], dimensions[k]);
+		vector_multiplication_matrix(multiplicand, nabla_b[k], dimensions[k+1], 1);
+	}
+}
+
 void sgd(Network net,int epochs, double*** training_data, double*** labels, int num_samples, int batch_size, double learning_rate){
 	for(int i =0; i<epochs; i++){
 		shuffle_data(training_data, labels, num_samples);
@@ -264,5 +279,8 @@ void sgd(Network net,int epochs, double*** training_data, double*** labels, int 
 
 		for(int j =0; j<num_samples; j++){
 			backprop(net, training_data[j], labels[j]);
+			nabla_addition(net, nabla_w, nabla_b);
+
+			if((j+1)%batch_size == 0 || j==num_samples-1) 
 
 
