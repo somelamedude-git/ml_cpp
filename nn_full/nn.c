@@ -262,14 +262,3 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 		}
 	}
 }
-
-
-
-	
-
-	
-	
-	
-
-
-
