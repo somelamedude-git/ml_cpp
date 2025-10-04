@@ -207,14 +207,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 	double** transpose_act_layer = create_matrix(1, num_neurons);
 	transpose_twoD(net.activations[net.num_of_layers-2], num_neurons, transpose_act_layer);
 
-	double** nabla_w = create_matrix(net.neurons_per_layer[net.num_of_layers-1],net.neurons_per_layer[net.num_of_layers-2]);
-	matrix_multiplication(sigma, transpose_act_layer, nabla_w, net.neurons_per_layer[net.num_of_layers-1], 1, 1, num_neurons);
-
-	for(int i =0; i<net.neurons_per_layer[net.num_of_layers-1]; i++){
-		for(int j =0; j<num_neurons; j++){
-			net.nabla_w[net.num_of_layers-2][i][j] = nabla_w[i][j];
-		}
-	}
+	matrix_multiplication(sigma, transpose_act_layer, net.nabla_w[net.num_of_layers-2], net.neurons_per_layer[net.num_of_layers-1], 1, 1, num_neurons);
 
 	for(int k = net.num_of_layers-2; k>=1; k--){
 
@@ -241,7 +234,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
                  weight_cols = net.neurons_per_layer[k-1];
 
 		double** nabla_w = create_matrix(weight_rows, weight_cols);
-		matrix_multiplication(sigma, activations_transpose, nabla_w, net.neurons_per_layer[k], 1, 1, net.neurons_per_layer[k-1]);
+		matrix_multiplication(sigma, activations_transpose, net.nabla_w[k-1], net.neurons_per_layer[k], 1, 1, net.neurons_per_layer[k-1]);
 
 		for(int i =0; i<weight_rows; i++){
 			for(int j =0; j<weight_cols; j++){
