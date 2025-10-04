@@ -233,13 +233,7 @@ void backprop(Network net, double** input, double** output, int input_size, int 
 		 weight_rows = net.neurons_per_layer[k];
                  weight_cols = net.neurons_per_layer[k-1];
 
-		double** nabla_w = create_matrix(weight_rows, weight_cols);
 		matrix_multiplication(sigma, activations_transpose, net.nabla_w[k-1], net.neurons_per_layer[k], 1, 1, net.neurons_per_layer[k-1]);
 
-		for(int i =0; i<weight_rows; i++){
-			for(int j =0; j<weight_cols; j++){
-				net.nabla_w[k-1][i][j] = nabla_w[i][j];
-			}
-		}
 	}
 }
