@@ -298,6 +298,8 @@ void backprop(Network net, double** input, double** output){
 	free_memory_twoD(weight_matrix_transpose, max_neurons, max_neurons);
 	free_memory_twoD(derivative_array, net.neurons_per_layer[net.num_of_layers-1], 1);
 	free_memory_twoD(derivative_matrix, net.neurons_per_layer[net.num_of_layers-1], 1);
+	free_memory_twoD(sigma, net.neurons_per_layer[net.num_of_layers-1], 1);
+free_memory_twoD(transpose_act_layer, 1, net.neurons_per_layer[net.num_of_layers-2]);
 }
 
 void shuffle_data(double*** data, double*** labels, int num_samples){
@@ -398,7 +400,16 @@ void sgd(Network net,int epochs, double*** training_data, double*** labels, int 
 				reset_nabla(nabla_w, nabla_b, net.neurons_per_layer, net.num_of_layers);
 			}
 		}
+
+		for(int k =0; k<net.num_of_layers-1; k++){
+			free_memory_twoD(nabla_w[k], net.neurons_per_layer[k+1], net.neurons_per_layer[k]);
+			free_memory_twoD(nabla_b[k], net.neurons_per_layer[k+1], 1);
+		}
+
+		free(nabla_w);
+		free(nabla_b);
 	}
+
 }
 				
 
