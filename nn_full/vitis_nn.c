@@ -33,4 +33,24 @@ void fill_network(Network net,int neurons_per_layer[num_of_layers], double weigh
 	}
 }
 
-void feed_forward(Network net)
+void sigmoid(double x){
+	x = 1.0/(1.0 + exp(-x));
+}
+
+void sigmoid_derivative(double x){
+	x = exp(-x)/((1+exp(-x)) *(1+ exp(-x)));
+}
+
+void sigmoid_list(double x[LAYER_ONE], int list_size){
+	for(int i =0; i<list_size; i++){
+		x[i] = sigmoid(x[i]);
+	}
+}
+
+void sigmoid_derivative_list(double x[LAYER_ONE], int list_size){
+	for(int i =0; i<list_size; i++){
+		x[i] = sigmoid_derivative(x[i]);
+	}
+}
+
+
