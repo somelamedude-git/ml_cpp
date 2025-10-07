@@ -60,4 +60,41 @@ void sigmoid_derivative_list(double x[LAYER_ONE], int list_size){
 	}
 }
 
-void feed_forward(Network net, 
+void matrix_multiplication(double matrix_one[LAYER_ONE][LAYER_ONE], double matrix_two[LAYER_ONE][LAYER_ONE], double product_matrix[LAYER_ONE][LAYER_ONE], int row_one,
+		int col_one, int row_two, int col_two){
+	for(int i =0; i<row_one; i++){
+		for(int j =0; j<col_two; j++){
+			for(int k =0; k<col_one; k++){
+				product_matrix[i][k] += matrix_one[i][j]*matrix_two[j][k];
+			}
+		}
+	}
+}
+
+void feed_forward(Network net, Testing data){
+       int size_of_input = net.neurons_per_layer[0];
+       for(int i = 0; i < size_of_input; i++){
+                if(net.activations[0][i] == NULL || activation_input[i] == NULL){
+                        continue;
+                }
+                net.activations[0][i][0] = activation_input[i][0];
+        }
+
+       int max_neurons = net.neurons_per_layer[0];
+        for(int i = 0; i < net.num_of_layers; i++){
+                if(max_neurons < net.neurons_per_layer[i]) max_neurons = net.neurons_per_layer[i];
+        }
+
+	double product_matrix[max_neurons][1];
+	double addition_matrix[max_neurons][1];
+	double activated_output[max_neurons][1];
+
+	 if(product_matrix == NULL || addition_matrix == NULL || activated_output == NULL){
+                return;
+        }
+
+	 for(int i =0; i<net.num_of_layers-1; i++){
+		 int weight_rows = net.neurons_per_layer[i+1];
+		 int weight_cols = net.neurons_per_layer[i];
+
+		 
