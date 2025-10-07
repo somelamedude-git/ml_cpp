@@ -945,16 +945,16 @@ void create_one_hot_label(double** label, int digit) {
     label[digit][0] = 1.0;
 }
 
-void network_file(const char* filename_weights, const char* filename_bias, Network* net){ // The filename has to be in the binary format, name of the file can be test.bin
+void network_file(const char* filename_weights, const char* filename_bias, Network net){ // The filename has to be in the binary format, name of the file can be test.bin
 	int num_of_layers = net.num_of_layers;
 	FILE* file_weights = fopen(filename_weights, "wb");
 	FILE* file_bias = fopen(filename_bias, "wb");
 
 	for(int k =0; k<num_of_layers; k++){
 		for(int i =0; i<net.neurons_per_layer[k+1]; i++){
-			fwrite(net.biases[k][i][0], sizeof(double), 1, file_bias);
-			for(int j =0; j<net.neurons_per_layer[k]; i++){
-				fwrite(net.weights[k][i][j], sizeof(double), 1, file_weights);
+			fwrite(&net.biases[k][i][0], sizeof(double), 1, file_bias);
+			for(int j =0; j<net.neurons_per_layer[k]; j++){
+				fwrite(&net.weights[k][i][j], sizeof(double), 1, file_weights);
 			}
 		}
 	}
@@ -1213,7 +1213,8 @@ int main(){
                i, test_digit_correct[i], test_digit_total[i],
                (test_digit_correct[i] * 100.0) / test_digit_total[i]);
     }
-    
+
+   network_file("weights.bin", "bias.bin", net);
     printf("\n========================================================\n");
 
     // Cleanup
@@ -1241,6 +1242,7 @@ int main(){
     for(int i = 0; i < net.num_of_layers; i++){
         free_memory_twoD(net.activations[i], net.neurons_per_layer[i], 1);
     }
+
 
     free(net.weights);
     free(net.biases);
