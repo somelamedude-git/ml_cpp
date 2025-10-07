@@ -29,14 +29,14 @@ void free_memory_twoD(double** matrix, int rows, int cols){
 	free(matrix);
 }
 
-void print_weights(Network* net, int epoch){
+void print_weights(Network net, int epoch){
 	printf("\n========== Weights at Epoch %d ==========\n", epoch);
-	for(int layer = 0; layer < net->num_of_layers - 1; layer++){
+	for(int layer = 0; layer < net.num_of_layers - 1; layer++){
 		printf("\nLayer %d -> %d:\n", layer, layer + 1);
-		for(int i = 0; i < net->neurons_per_layer[layer + 1]; i++){
+		for(int i = 0; i < net.neurons_per_layer[layer + 1]; i++){
 			printf("  Neuron %d: [ ", i);
-			for(int j = 0; j < net->neurons_per_layer[layer]; j++){
-				printf("%.6f ", net->weights[layer][i][j]);
+			for(int j = 0; j < net.neurons_per_layer[layer]; j++){
+				printf("%.6f ", net.weights[layer][i][j]);
 			}
 			printf("]\n");
 		}
@@ -44,7 +44,7 @@ void print_weights(Network* net, int epoch){
 	printf("==========================================\n\n");
 }
 
-Network* initialize_network(int num_layers, int neuron_per_layer[]){
+Network initialize_network(int num_layers, int neuron_per_layer[]){
 	if(num_layers < 2){
 		exit(1);
 	}
@@ -52,21 +52,21 @@ Network* initialize_network(int num_layers, int neuron_per_layer[]){
 		exit(1);
 	}
 	
-	Network* net = {0};
-	net->num_of_layers = num_layers;
-	net->neurons_per_layer = (int*)malloc(sizeof(int) * num_layers);
-	if(net->neurons_per_layer == NULL){
+	Network net = {0};
+	net.num_of_layers = num_layers;
+	net.neurons_per_layer = (int*)malloc(sizeof(int) * num_layers);
+	if(net.neurons_per_layer == NULL){
 		exit(1);
 	}
 	
 	for(int i = 0; i < num_layers; i++){
-		net->neurons_per_layer[i] = neuron_per_layer[i];
+		net.neurons_per_layer[i] = neuron_per_layer[i];
 	}
 	
 	srand(time(NULL));
 	
-	net->weights = (double***)malloc(sizeof(double**) * (num_layers - 1));
-	if(net->weights == NULL){
+	net.weights = (double***)malloc(sizeof(double**) * (num_layers - 1));
+	if(net.weights == NULL){
 		exit(1);
 	}
 	
@@ -74,113 +74,113 @@ Network* initialize_network(int num_layers, int neuron_per_layer[]){
 		int rows = neuron_per_layer[i+1];
 		int cols = neuron_per_layer[i];
 		
-		net->weights[i] = (double**)malloc(sizeof(double*) * rows);
-		if(net->weights[i] == NULL){
+		net.weights[i] = (double**)malloc(sizeof(double*) * rows);
+		if(net.weights[i] == NULL){
 			exit(1);
 		}
 		
 		for(int j = 0; j < rows; j++){
-			net->weights[i][j] = (double*)malloc(sizeof(double) * cols);
-			if(net->weights[i][j] == NULL){
+			net.weights[i][j] = (double*)malloc(sizeof(double) * cols);
+			if(net.weights[i][j] == NULL){
 				exit(1);
 			}
 			for(int k = 0; k < cols; k++){
-				net->weights[i][j][k] = ((double)rand() / RAND_MAX - 0.5) * 2;
+				net.weights[i][j][k] = ((double)rand() / RAND_MAX - 0.5) * 2;
 			}
 		}
 	}
 	
-	net->biases = (double***)malloc(sizeof(double**) * (num_layers - 1));
-	if(net->biases == NULL){
+	net.biases = (double***)malloc(sizeof(double**) * (num_layers - 1));
+	if(net.biases == NULL){
 		exit(1);
 	}
 	
 	for(int i = 0; i < num_layers - 1; i++){
 		int rows = neuron_per_layer[i+1];
-		net->biases[i] = (double**)malloc(sizeof(double*) * rows);
-		if(net->biases[i] == NULL){
+		net.biases[i] = (double**)malloc(sizeof(double*) * rows);
+		if(net.biases[i] == NULL){
 			exit(1);
 		}
 		for(int j = 0; j < rows; j++){
-			net->biases[i][j] = (double*)calloc(1, sizeof(double));
-			if(net->biases[i][j] == NULL){
+			net.biases[i][j] = (double*)calloc(1, sizeof(double));
+			if(net.biases[i][j] == NULL){
 				exit(1);
 			}
 		}
 	}
 	
-	net->activations = (double***)malloc(sizeof(double**) * num_layers);
-	if(net->activations == NULL){
+	net.activations = (double***)malloc(sizeof(double**) * num_layers);
+	if(net.activations == NULL){
 		exit(1);
 	}
 	
 	for(int i = 0; i < num_layers; i++){
 		int rows = neuron_per_layer[i];
-		net->activations[i] = (double**)malloc(sizeof(double*) * rows);
-		if(net->activations[i] == NULL){
+		net.activations[i] = (double**)malloc(sizeof(double*) * rows);
+		if(net.activations[i] == NULL){
 			exit(1);
 		}
 		for(int j = 0; j < rows; j++){
-			net->activations[i][j] = (double*)calloc(1, sizeof(double));
-			if(net->activations[i][j] == NULL){
+			net.activations[i][j] = (double*)calloc(1, sizeof(double));
+			if(net.activations[i][j] == NULL){
 				exit(1);
 			}
 		}
 	}
 	
-	net->z_s = (double***)malloc(sizeof(double**) * (num_layers - 1));
-	if(net->z_s == NULL){
+	net.z_s = (double***)malloc(sizeof(double**) * (num_layers - 1));
+	if(net.z_s == NULL){
 		exit(1);
 	}
 	
 	for(int i = 0; i < num_layers - 1; i++){
 		int rows = neuron_per_layer[i+1];
-		net->z_s[i] = (double**)malloc(sizeof(double*) * rows);
-		if(net->z_s[i] == NULL){
+		net.z_s[i] = (double**)malloc(sizeof(double*) * rows);
+		if(net.z_s[i] == NULL){
 			exit(1);
 		}
 		for(int j = 0; j < rows; j++){
-			net->z_s[i][j] = (double*)calloc(1, sizeof(double));
-			if(net->z_s[i][j] == NULL){
+			net.z_s[i][j] = (double*)calloc(1, sizeof(double));
+			if(net.z_s[i][j] == NULL){
 				exit(1);
 			}
 		}
 	}
 	
-	net->delta_nabla_w = (double***)malloc(sizeof(double**) * (num_layers - 1));
-	if(net->delta_nabla_w == NULL){
+	net.delta_nabla_w = (double***)malloc(sizeof(double**) * (num_layers - 1));
+	if(net.delta_nabla_w == NULL){
 		exit(1);
 	}
 	
 	for(int i = 0; i < num_layers - 1; i++){
 		int rows = neuron_per_layer[i+1];
 		int cols = neuron_per_layer[i];
-		net->delta_nabla_w[i] = (double**)malloc(sizeof(double*) * rows);
-		if(net->delta_nabla_w[i] == NULL){
+		net.delta_nabla_w[i] = (double**)malloc(sizeof(double*) * rows);
+		if(net.delta_nabla_w[i] == NULL){
 			exit(1);
 		}
 		for(int j = 0; j < rows; j++){
-			net->delta_nabla_w[i][j] = (double*)calloc(cols, sizeof(double));
-			if(net->delta_nabla_w[i][j] == NULL){
+			net.delta_nabla_w[i][j] = (double*)calloc(cols, sizeof(double));
+			if(net.delta_nabla_w[i][j] == NULL){
 				exit(1);
 			}
 		}
 	}
 	
-	net->delta_nabla_b = (double***)malloc(sizeof(double**) * (num_layers - 1));
-	if(net->delta_nabla_b == NULL){
+	net.delta_nabla_b = (double***)malloc(sizeof(double**) * (num_layers - 1));
+	if(net.delta_nabla_b == NULL){
 		exit(1);
 	}
 	
 	for(int i = 0; i < num_layers - 1; i++){
 		int rows = neuron_per_layer[i+1];
-		net->delta_nabla_b[i] = (double**)malloc(sizeof(double*) * rows);
-		if(net->delta_nabla_b[i] == NULL){
+		net.delta_nabla_b[i] = (double**)malloc(sizeof(double*) * rows);
+		if(net.delta_nabla_b[i] == NULL){
 			exit(1);
 		}
 		for(int j = 0; j < rows; j++){
-			net->delta_nabla_b[i][j] = (double*)calloc(1, sizeof(double));
-			if(net->delta_nabla_b[i][j] == NULL){
+			net.delta_nabla_b[i][j] = (double*)calloc(1, sizeof(double));
+			if(net.delta_nabla_b[i][j] == NULL){
 				exit(1);
 			}
 		}
@@ -332,23 +332,23 @@ void matrix_addition(double** matrix_one, double** matrix_two, int rows, int col
 	}
 }
 
-void feed_forward(Network* net, double** activation_input){
+void feed_forward(Network net, double** activation_input){
 	if(activation_input == NULL){
 		return;
 	}
 	
-	int size_of_input = net->neurons_per_layer[0];
+	int size_of_input = net.neurons_per_layer[0];
 	
 	for(int i = 0; i < size_of_input; i++){
-		if(net->activations[0][i] == NULL || activation_input[i] == NULL){
+		if(net.activations[0][i] == NULL || activation_input[i] == NULL){
 			continue;
 		}
-		net->activations[0][i][0] = activation_input[i][0];
+		net.activations[0][i][0] = activation_input[i][0];
 	}
 	
-	int max_neurons = net->neurons_per_layer[0];
-	for(int i = 0; i < net->num_of_layers; i++){
-		if(max_neurons < net->neurons_per_layer[i]) max_neurons = net->neurons_per_layer[i];
+	int max_neurons = net.neurons_per_layer[0];
+	for(int i = 0; i < net.num_of_layers; i++){
+		if(max_neurons < net.neurons_per_layer[i]) max_neurons = net.neurons_per_layer[i];
 	}
 	
 	double** product_matrix = create_matrix(max_neurons, 1);
@@ -359,37 +359,37 @@ void feed_forward(Network* net, double** activation_input){
 		return;
 	}
 	
-	for(int i = 0; i < net->num_of_layers-1; i++){
-		int weight_rows = net->neurons_per_layer[i+1];
-		int weight_cols = net->neurons_per_layer[i];
+	for(int i = 0; i < net.num_of_layers-1; i++){
+		int weight_rows = net.neurons_per_layer[i+1];
+		int weight_cols = net.neurons_per_layer[i];
 		
-		if(net->weights[i] == NULL){
+		if(net.weights[i] == NULL){
 			break;
 		}
 		
-		matrix_multiplication(net->weights[i], activation_input, product_matrix, weight_rows, weight_cols, size_of_input, 1);
+		matrix_multiplication(net.weights[i], activation_input, product_matrix, weight_rows, weight_cols, size_of_input, 1);
 		
-		if(net->biases[i] == NULL){
+		if(net.biases[i] == NULL){
 			break;
 		}
 		
-		matrix_addition(net->biases[i], product_matrix, weight_rows, 1, addition_matrix);
+		matrix_addition(net.biases[i], product_matrix, weight_rows, 1, addition_matrix);
 		
 		for(int j = 0; j < weight_rows; j++){
-			if(net->z_s[i][j] == NULL || addition_matrix[j] == NULL){
+			if(net.z_s[i][j] == NULL || addition_matrix[j] == NULL){
 				continue;
 			}
-			net->z_s[i][j][0] = addition_matrix[j][0];
+			net.z_s[i][j][0] = addition_matrix[j][0];
 		}
 		
-		sigmoid_list(net->z_s[i], weight_rows, activated_output);
+		sigmoid_list(net.z_s[i], weight_rows, activated_output);
 		
 		for(int j = 0; j < weight_rows; j++){
-			if(activation_input[j] == NULL || activated_output[j] == NULL || net->activations[i+1][j] == NULL){
+			if(activation_input[j] == NULL || activated_output[j] == NULL || net.activations[i+1][j] == NULL){
 				continue;
 			}
 			activation_input[j][0] = activated_output[j][0];
-			net->activations[i+1][j][0] = activated_output[j][0];
+			net.activations[i+1][j][0] = activated_output[j][0];
 		}
 		
 		size_of_input = weight_rows;
@@ -417,11 +417,11 @@ void matrix_subt(double** matrix_one, double** matrix_two, int rows, int cols, d
 	}
 }
 
-void compute_cost_derivative(Network* net, double** expected_output, double** output, double** derivative_matrix){
+void compute_cost_derivative(Network net, double** expected_output, double** output, double** derivative_matrix){
 	if(expected_output == NULL || output == NULL || derivative_matrix == NULL){
 		return;
 	}
-	int rows = net->neurons_per_layer[net->num_of_layers-1];
+	int rows = net.neurons_per_layer[net.num_of_layers-1];
 	matrix_subt(output, expected_output, rows, 1, derivative_matrix);
 }
 
@@ -442,14 +442,14 @@ void hadamard_matrix_mult(double** matrix_one, double** matrix_two, int rows, in
 	}
 }
 
-void backprop(Network* net, double** input, double** output){
+void backprop(Network net, double** input, double** output){
 	if(input == NULL || output == NULL){
 		return;
 	}
 	
-	int max_neurons = net->neurons_per_layer[0];
-	for(int i = 0; i < net->num_of_layers; i++){
-		if(max_neurons < net->neurons_per_layer[i]) max_neurons = net->neurons_per_layer[i];
+	int max_neurons = net.neurons_per_layer[0];
+	for(int i = 0; i < net.num_of_layers; i++){
+		if(max_neurons < net.neurons_per_layer[i]) max_neurons = net.neurons_per_layer[i];
 	}
 	
 	double** input_copy = create_matrix(max_neurons, 1);
@@ -457,7 +457,7 @@ void backprop(Network* net, double** input, double** output){
 		return;
 	}
 	
-	for(int i = 0; i < net->neurons_per_layer[0]; i++){
+	for(int i = 0; i < net.neurons_per_layer[0]; i++){
 		if(input[i] == NULL || input_copy[i] == NULL){
 			continue;
 		}
@@ -466,7 +466,7 @@ void backprop(Network* net, double** input, double** output){
 	
 	feed_forward(net, input_copy);
 	
-	int num_neurons = net->neurons_per_layer[net->num_of_layers-1];
+	int num_neurons = net.neurons_per_layer[net.num_of_layers-1];
 	
 	double** derivative_array = create_matrix(num_neurons, 1);
 	if(derivative_array == NULL){
@@ -474,7 +474,7 @@ void backprop(Network* net, double** input, double** output){
 		return;
 	}
 	
-	sigmoid_derivative_list(net->z_s[net->num_of_layers-2], num_neurons, derivative_array);
+	sigmoid_derivative_list(net.z_s[net.num_of_layers-2], num_neurons, derivative_array);
 	
 	double** derivative_matrix = create_matrix(num_neurons, 1);
 	if(derivative_matrix == NULL){
@@ -483,7 +483,7 @@ void backprop(Network* net, double** input, double** output){
 		return;
 	}
 	
-	compute_cost_derivative(net, output, net->activations[net->num_of_layers-1], derivative_matrix);
+	compute_cost_derivative(net, output, net.activations[net.num_of_layers-1], derivative_matrix);
 	
 	double** sigma = create_matrix(max_neurons, 1);
 	if(sigma == NULL){
@@ -496,27 +496,27 @@ void backprop(Network* net, double** input, double** output){
 	hadamard_matrix_mult(derivative_matrix, derivative_array, num_neurons, 1, sigma);
 	
 	for(int j = 0; j < num_neurons; j++){
-		if(net->delta_nabla_b[net->num_of_layers-2][j] == NULL || sigma[j] == NULL){
+		if(net.delta_nabla_b[net.num_of_layers-2][j] == NULL || sigma[j] == NULL){
 			continue;
 		}
-		net->delta_nabla_b[net->num_of_layers-2][j][0] = sigma[j][0];
+		net.delta_nabla_b[net.num_of_layers-2][j][0] = sigma[j][0];
 	}
 	
-	num_neurons = net->neurons_per_layer[net->num_of_layers-2];
+	num_neurons = net.neurons_per_layer[net.num_of_layers-2];
 	
 	double** transpose_act_layer = create_matrix(1, num_neurons);
 	if(transpose_act_layer == NULL){
 		free_memory_twoD(input_copy, max_neurons, 1);
-		free_memory_twoD(derivative_array, net->neurons_per_layer[net->num_of_layers-1], 1);
-		free_memory_twoD(derivative_matrix, net->neurons_per_layer[net->num_of_layers-1], 1);
-		free_memory_twoD(sigma, net->neurons_per_layer[net->num_of_layers-1], 1);
+		free_memory_twoD(derivative_array, net.neurons_per_layer[net.num_of_layers-1], 1);
+		free_memory_twoD(derivative_matrix, net.neurons_per_layer[net.num_of_layers-1], 1);
+		free_memory_twoD(sigma, net.neurons_per_layer[net.num_of_layers-1], 1);
 		return;
 	}
 	
-	transpose(net->activations[net->num_of_layers-2], num_neurons, 1, transpose_act_layer);
+	transpose(net.activations[net.num_of_layers-2], num_neurons, 1, transpose_act_layer);
 	
-	matrix_multiplication(sigma, transpose_act_layer, net->delta_nabla_w[net->num_of_layers-2], 
-	                     net->neurons_per_layer[net->num_of_layers-1], 1, 1, num_neurons);
+	matrix_multiplication(sigma, transpose_act_layer, net.delta_nabla_w[net.num_of_layers-2], 
+	                     net.neurons_per_layer[net.num_of_layers-1], 1, 1, num_neurons);
 	
 	double** z_sigmoid_derivative = create_matrix(max_neurons, 1);
 	double** activations_transpose = create_matrix(1, max_neurons);
@@ -524,63 +524,63 @@ void backprop(Network* net, double** input, double** output){
 	
 	if(z_sigmoid_derivative == NULL || activations_transpose == NULL || weight_matrix_transpose == NULL){
 		free_memory_twoD(input_copy, max_neurons, 1);
-		free_memory_twoD(derivative_array, net->neurons_per_layer[net->num_of_layers-1], 1);
-		free_memory_twoD(derivative_matrix, net->neurons_per_layer[net->num_of_layers-1], 1);
-		free_memory_twoD(sigma, net->neurons_per_layer[net->num_of_layers-1], 1);
-		free_memory_twoD(transpose_act_layer, 1, net->neurons_per_layer[net->num_of_layers-2]);
+		free_memory_twoD(derivative_array, net.neurons_per_layer[net.num_of_layers-1], 1);
+		free_memory_twoD(derivative_matrix, net.neurons_per_layer[net.num_of_layers-1], 1);
+		free_memory_twoD(sigma, net.neurons_per_layer[net.num_of_layers-1], 1);
+		free_memory_twoD(transpose_act_layer, 1, net.neurons_per_layer[net.num_of_layers-2]);
 		return;
 	}
 	
-	for(int k = net->num_of_layers-2; k >= 1; k--){
-		sigmoid_derivative_list(net->z_s[k-1], net->neurons_per_layer[k], z_sigmoid_derivative);
+	for(int k = net.num_of_layers-2; k >= 1; k--){
+		sigmoid_derivative_list(net.z_s[k-1], net.neurons_per_layer[k], z_sigmoid_derivative);
 		
-		int weight_rows = net->neurons_per_layer[k+1];
-		int weight_cols = net->neurons_per_layer[k];
+		int weight_rows = net.neurons_per_layer[k+1];
+		int weight_cols = net.neurons_per_layer[k];
 		
-		if(net->weights[k] == NULL){
+		if(net.weights[k] == NULL){
 			break;
 		}
 		
-		transpose(net->weights[k], weight_rows, weight_cols, weight_matrix_transpose);
+		transpose(net.weights[k], weight_rows, weight_cols, weight_matrix_transpose);
 		double** temp_sigma = create_matrix(weight_cols, 1);		
-		matrix_multiplication(weight_matrix_transpose, sigma, temp_sigma, weight_cols, weight_rows, net->neurons_per_layer[k+1], 1);
+		matrix_multiplication(weight_matrix_transpose, sigma, temp_sigma, weight_cols, weight_rows, net.neurons_per_layer[k+1], 1);
 		 for(int m = 0; m < weight_cols; m++){
         sigma[m][0] = temp_sigma[m][0];
     }
 		  free_memory_twoD(temp_sigma, weight_cols, 1);
 		hadamard_matrix_mult(sigma, z_sigmoid_derivative, weight_cols, 1, sigma);
 		
-		for(int i = 0; i < net->neurons_per_layer[k]; i++){
-			if(net->delta_nabla_b[k-1][i] == NULL || sigma[i] == NULL){
+		for(int i = 0; i < net.neurons_per_layer[k]; i++){
+			if(net.delta_nabla_b[k-1][i] == NULL || sigma[i] == NULL){
 				continue;
 			}
-			net->delta_nabla_b[k-1][i][0] = sigma[i][0];
+			net.delta_nabla_b[k-1][i][0] = sigma[i][0];
 		}
 		
-		if(net->activations[k-1] == NULL){
+		if(net.activations[k-1] == NULL){
 			break;
 		}
 		
-		transpose(net->activations[k-1], net->neurons_per_layer[k-1], 1, activations_transpose);
+		transpose(net.activations[k-1], net.neurons_per_layer[k-1], 1, activations_transpose);
 		
-		weight_rows = net->neurons_per_layer[k];
-		weight_cols = net->neurons_per_layer[k-1];
+		weight_rows = net.neurons_per_layer[k];
+		weight_cols = net.neurons_per_layer[k-1];
 		
-		if(net->delta_nabla_w[k-1] == NULL){
+		if(net.delta_nabla_w[k-1] == NULL){
 			break;
 		}
 		
-		matrix_multiplication(sigma, activations_transpose, net->delta_nabla_w[k-1], net->neurons_per_layer[k], 1, 1, net->neurons_per_layer[k-1]);
+		matrix_multiplication(sigma, activations_transpose, net.delta_nabla_w[k-1], net.neurons_per_layer[k], 1, 1, net.neurons_per_layer[k-1]);
 	}
 	
 	free_memory_twoD(input_copy, max_neurons, 1);
 	free_memory_twoD(z_sigmoid_derivative, max_neurons, 1);
 	free_memory_twoD(activations_transpose, 1, max_neurons);
 	free_memory_twoD(weight_matrix_transpose, max_neurons, max_neurons);
-	free_memory_twoD(derivative_array, net->neurons_per_layer[net->num_of_layers-1], 1);
-	free_memory_twoD(derivative_matrix, net->neurons_per_layer[net->num_of_layers-1], 1);
-	free_memory_twoD(sigma, net->neurons_per_layer[net->num_of_layers-1], 1);
-	free_memory_twoD(transpose_act_layer, 1, net->neurons_per_layer[net->num_of_layers-2]);
+	free_memory_twoD(derivative_array, net.neurons_per_layer[net.num_of_layers-1], 1);
+	free_memory_twoD(derivative_matrix, net.neurons_per_layer[net.num_of_layers-1], 1);
+	free_memory_twoD(sigma, net.neurons_per_layer[net.num_of_layers-1], 1);
+	free_memory_twoD(transpose_act_layer, 1, net.neurons_per_layer[net.num_of_layers-2]);
 }
 
 void shuffle_data(double*** data, double*** labels, int num_samples){
@@ -659,29 +659,29 @@ double*** initialize_nabla(int* size_array, int num_of_layers, bool is_bias){
 	}
 }
 
-void nabla_addition(Network* net, double*** nabla_w, double*** nabla_b){
+void nabla_addition(Network net, double*** nabla_w, double*** nabla_b){
 	if(nabla_w == NULL || nabla_b == NULL){
 		return;
 	}
-	for(int k = 0; k < net->num_of_layers-1; k++){
-		if(nabla_w[k] == NULL || nabla_b[k] == NULL || net->delta_nabla_w[k] == NULL || net->delta_nabla_b[k] == NULL){
+	for(int k = 0; k < net.num_of_layers-1; k++){
+		if(nabla_w[k] == NULL || nabla_b[k] == NULL || net.delta_nabla_w[k] == NULL || net.delta_nabla_b[k] == NULL){
 			continue;
 		}
-		matrix_addition(nabla_w[k], net->delta_nabla_w[k], net->neurons_per_layer[k+1], net->neurons_per_layer[k], nabla_w[k]);
-		matrix_addition(nabla_b[k], net->delta_nabla_b[k], net->neurons_per_layer[k+1], 1, nabla_b[k]);
+		matrix_addition(nabla_w[k], net.delta_nabla_w[k], net.neurons_per_layer[k+1], net.neurons_per_layer[k], nabla_w[k]);
+		matrix_addition(nabla_b[k], net.delta_nabla_b[k], net.neurons_per_layer[k+1], 1, nabla_b[k]);
 	}
 }
 
-void param_tuning(Network* net, double*** nabla_w, double*** nabla_b){
+void param_tuning(Network net, double*** nabla_w, double*** nabla_b){
 	if(nabla_w == NULL || nabla_b == NULL){
 		return;
 	}
-	for(int k = 0; k < net->num_of_layers-1; k++){
-		if(net->weights[k] == NULL || net->biases[k] == NULL || nabla_w[k] == NULL || nabla_b[k] == NULL){
+	for(int k = 0; k < net.num_of_layers-1; k++){
+		if(net.weights[k] == NULL || net.biases[k] == NULL || nabla_w[k] == NULL || nabla_b[k] == NULL){
 			continue;
 		}
-		matrix_addition(net->weights[k], nabla_w[k], net->neurons_per_layer[k+1], net->neurons_per_layer[k], net->weights[k]);
-		matrix_addition(net->biases[k], nabla_b[k], net->neurons_per_layer[k+1], 1, net->biases[k]);
+		matrix_addition(net.weights[k], nabla_w[k], net.neurons_per_layer[k+1], net.neurons_per_layer[k], net.weights[k]);
+		matrix_addition(net.biases[k], nabla_b[k], net.neurons_per_layer[k+1], 1, net.biases[k]);
 	}
 }
 
@@ -744,7 +744,7 @@ void reset_nabla(double*** nabla_w, double*** nabla_b, int* size_array, int num_
 	}
 }
 
-void sgd(Network* net, int epochs, double*** training_data, double*** labels, int num_samples, int batch_size, double learning_rate){
+void sgd(Network net, int epochs, double*** training_data, double*** labels, int num_samples, int batch_size, double learning_rate){
 	if(training_data == NULL || labels == NULL){
 		return;
 	}
@@ -760,8 +760,8 @@ void sgd(Network* net, int epochs, double*** training_data, double*** labels, in
 	for(int i = 0; i < epochs; i++){
 		shuffle_data(training_data, labels, num_samples);
 		
-		double*** nabla_w = initialize_nabla(net->neurons_per_layer, net->num_of_layers, false);
-		double*** nabla_b = initialize_nabla(net->neurons_per_layer, net->num_of_layers, true);
+		double*** nabla_w = initialize_nabla(net.neurons_per_layer, net.num_of_layers, false);
+		double*** nabla_b = initialize_nabla(net.neurons_per_layer, net.num_of_layers, true);
 		
 		if(nabla_w == NULL || nabla_b == NULL){
 			break;
@@ -777,9 +777,9 @@ void sgd(Network* net, int epochs, double*** training_data, double*** labels, in
 			
 			if((j+1) % batch_size == 0 || j == num_samples-1){
 				double mult = -1 * learning_rate / batch_size;
-				vector_list_multiplication(mult, net->neurons_per_layer, net->num_of_layers, nabla_w, nabla_b);
+				vector_list_multiplication(mult, net.neurons_per_layer, net.num_of_layers, nabla_w, nabla_b);
 				param_tuning(net, nabla_w, nabla_b);
-				reset_nabla(nabla_w, nabla_b, net->neurons_per_layer, net->num_of_layers);
+				reset_nabla(nabla_w, nabla_b, net.neurons_per_layer, net.num_of_layers);
 			}
 		}
 		
@@ -787,12 +787,12 @@ void sgd(Network* net, int epochs, double*** training_data, double*** labels, in
 			print_weights(net, i+1);
 		}
 		
-		for(int k = 0; k < net->num_of_layers-1; k++){
+		for(int k = 0; k < net.num_of_layers-1; k++){
 			if(nabla_w[k] != NULL){
-				free_memory_twoD(nabla_w[k], net->neurons_per_layer[k+1], net->neurons_per_layer[k]);
+				free_memory_twoD(nabla_w[k], net.neurons_per_layer[k+1], net.neurons_per_layer[k]);
 			}
 			if(nabla_b[k] != NULL){
-				free_memory_twoD(nabla_b[k], net->neurons_per_layer[k+1], 1);
+				free_memory_twoD(nabla_b[k], net.neurons_per_layer[k+1], 1);
 			}
 		}
 		
@@ -945,16 +945,16 @@ void create_one_hot_label(double** label, int digit) {
     label[digit][0] = 1.0;
 }
 
-void network_file(const char* filename_weights, const char* filename_bias, Network* net){ // The filename has to be in the binary format, name of the file can be test.bin
-	int num_of_layers = net->num_of_layers;
+void network_file(const char* filename_weights, const char* filename_bias, Network net){ // The filename has to be in the binary format, name of the file can be test.bin
+	int num_of_layers = net.num_of_layers;
 	FILE* file_weights = fopen(filename_weights, "wb");
 	FILE* file_bias = fopen(filename_bias, "wb");
 
 	for(int k =0; k<num_of_layers; k++){
-		for(int i =0; i<net->neurons_per_layer[k+1]; i++){
-			fwrite(&net->biases[k][i][0], sizeof(double), 1, file_bias);
-			for(int j =0; j<net->neurons_per_layer[k]; j++){
-				fwrite(&net->weights[k][i][j], sizeof(double), 1, file_weights);
+		for(int i =0; i<net.neurons_per_layer[k+1]; i++){
+			fwrite(&net.biases[k][i][0], sizeof(double), 1, file_bias);
+			for(int j =0; j<net.neurons_per_layer[k]; j++){
+				fwrite(&net.weights[k][i][j], sizeof(double), 1, file_weights);
 			}
 		}
 	}
@@ -1069,7 +1069,7 @@ int main(){
            784*128 + 128*64 + 64*10 + 128 + 64 + 10);
     printf("\n");
 
-    Network* net = initialize_network(num_layers, neurons_per_layer);
+    Network net = initialize_network(num_layers, neurons_per_layer);
 
     // Training parameters
     int epochs = 5000;
@@ -1107,10 +1107,10 @@ int main(){
         feed_forward(net, test_input);
 
         int predicted_class = 0;
-        double max_activation = net->activations[net->num_of_layers-1][0][0];
+        double max_activation = net.activations[net.num_of_layers-1][0][0];
         for(int j = 1; j < 10; j++) {
-            if(net->activations[net->num_of_layers-1][j][0] > max_activation) {
-                max_activation = net->activations[net->num_of_layers-1][j][0];
+            if(net.activations[net.num_of_layers-1][j][0] > max_activation) {
+                max_activation = net.activations[net.num_of_layers-1][j][0];
                 predicted_class = j;
             }
         }
@@ -1166,10 +1166,10 @@ int main(){
         feed_forward(net, test_input);
 
         int predicted_class = 0;
-        double max_activation = net->activations[net->num_of_layers-1][0][0];
+        double max_activation = net.activations[net.num_of_layers-1][0][0];
         for(int j = 1; j < 10; j++) {
-            if(net->activations[net->num_of_layers-1][j][0] > max_activation) {
-                max_activation = net->activations[net->num_of_layers-1][j][0];
+            if(net.activations[net.num_of_layers-1][j][0] > max_activation) {
+                max_activation = net.activations[net.num_of_layers-1][j][0];
                 predicted_class = j;
             }
         }
@@ -1231,26 +1231,26 @@ int main(){
     free(test_data);
     free(test_labels);
 
-    for(int i = 0; i < net->num_of_layers - 1; i++){
-        free_memory_twoD(net->weights[i], net->neurons_per_layer[i+1], net->neurons_per_layer[i]);
-        free_memory_twoD(net->biases[i], net->neurons_per_layer[i+1], 1);
-        free_memory_twoD(net->z_s[i], net->neurons_per_layer[i+1], 1);
-        free_memory_twoD(net->delta_nabla_w[i], net->neurons_per_layer[i+1], net->neurons_per_layer[i]);
-        free_memory_twoD(net->delta_nabla_b[i], net->neurons_per_layer[i+1], 1);
+    for(int i = 0; i < net.num_of_layers - 1; i++){
+        free_memory_twoD(net.weights[i], net.neurons_per_layer[i+1], net.neurons_per_layer[i]);
+        free_memory_twoD(net.biases[i], net.neurons_per_layer[i+1], 1);
+        free_memory_twoD(net.z_s[i], net.neurons_per_layer[i+1], 1);
+        free_memory_twoD(net.delta_nabla_w[i], net.neurons_per_layer[i+1], net.neurons_per_layer[i]);
+        free_memory_twoD(net.delta_nabla_b[i], net.neurons_per_layer[i+1], 1);
     }
 
-    for(int i = 0; i < net->num_of_layers; i++){
-        free_memory_twoD(net->activations[i], net->neurons_per_layer[i], 1);
+    for(int i = 0; i < net.num_of_layers; i++){
+        free_memory_twoD(net.activations[i], net.neurons_per_layer[i], 1);
     }
 
 
-    free(net->weights);
-    free(net->biases);
-    free(net->activations);
-    free(net->z_s);
-    free(net->delta_nabla_w);
-    free(net->delta_nabla_b);
-    free(net->neurons_per_layer);
+    free(net.weights);
+    free(net.biases);
+    free(net.activations);
+    free(net.z_s);
+    free(net.delta_nabla_w);
+    free(net.delta_nabla_b);
+    free(net.neurons_per_layer);
 
     return 0;
 }
