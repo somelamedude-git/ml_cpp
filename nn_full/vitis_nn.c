@@ -16,6 +16,13 @@ typedef struct Network{
 	double z_s[number_of_layers-1][LAYER_TWO][1];
 } Network;
 
+typedef struct Testing{
+	double inputs[LAYER_ONE]; 
+	double outputs[LAYER_FOUR]; // Optional to fill
+	double output_predicted[LAYER_FOUR];
+	double accuracy; // Optional
+} Testing;
+
 void fill_network(Network net,int neurons_per_layer[num_of_layers], double weights[number_of_layers-1][LAYER_ONE][LAYER_ONE], double biases[number_of_layers-1][LAYER_ONE][1]){
 	net.num_of_layers = number_of_layers;
 
@@ -53,4 +60,4 @@ void sigmoid_derivative_list(double x[LAYER_ONE], int list_size){
 	}
 }
 
-
+void feed_forward(Network net, 
