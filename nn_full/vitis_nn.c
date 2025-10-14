@@ -23,6 +23,25 @@ typedef struct Testing{
 	double accuracy; // Optional
 } Testing;
 
+void load_parameters(const char* weight_path, const char* bias_path, Network* net){
+	FILE * wf = fopen(weight_path, "rb");
+	FILE *bf = fopen(bias_path, "rb");
+
+	int num_of_layers = net->num_of_layers-1;
+	for(int k =0; k<num_of_layers; k++){
+		int rows = net->neurons_per_layer[k+1];
+		int cols = net->neurons_per_layer[k];
+
+		for(int i =0; i<rows; i++){
+			fread(&net->biases[k][i][0], sizeof(double), 1, bf);
+			for(int j =0; j<cols; j++){
+				fread(&net->weights[k][i][j], sizeof(double), 1, wf);
+			}
+		}
+	}
+}
+
+
 void fill_network(Network* net,int neurons_per_layer[number_of_layers], double weights[number_of_layers-1][LAYER_ONE][LAYER_ONE], double biases[number_of_layers-1][LAYER_ONE][1]){
 	net->num_of_layers = number_of_layers;
 

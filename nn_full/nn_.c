@@ -946,7 +946,7 @@ void create_one_hot_label(double** label, int digit) {
 }
 
 void network_file(const char* filename_weights, const char* filename_bias, Network net){ // The filename has to be in the binary format, name of the file can be test.bin
-	int num_of_layers = net.num_of_layers;
+	int num_of_layers = net.num_of_layers-1;
 	FILE* file_weights = fopen(filename_weights, "wb");
 	FILE* file_bias = fopen(filename_bias, "wb");
 
