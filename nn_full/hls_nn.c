@@ -79,8 +79,9 @@ void feed_forward(Network* net, Testing* data){
 		#pragma HLS PIPELINE
 		 int weight_rows = net->neurons_per_layer[i+1];
 		 int weight_cols = net->neurons_per_layer[i];
-
+		#pragma HLS INLINE
 		 matrix_multiplication(net->weights[i], net->activations[i], product_matrix, weight_rows, weight_cols, net->neurons_per_layer[i], 1);
+		#pragma HLS INLINE
 		 matrix_addition(net->biases[i], product_matrix, addition_matrix, weight_rows, 1);
 
 		 for(int j =0; j<weight_rows; j++){
@@ -89,6 +90,7 @@ void feed_forward(Network* net, Testing* data){
 
 			 net->z_s[i][j][0] = addition_matrix[j][0];
 		 }
+		#pragma HLS INLINE
 
 		 sigmoid_list(net->z_s[i], weight_rows, activated_output);
 
