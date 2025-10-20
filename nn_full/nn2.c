@@ -29,6 +29,27 @@ void free_memory_twoD(double** matrix, int rows, int cols){
 	free(matrix);
 }
 
+void print_weights_and_biases(Network net){
+	printf("\n========== FINAL WEIGHTS AND BIASES ==========\n");
+	for(int layer = 0; layer < net.num_of_layers - 1; layer++){
+		printf("\n--- Layer %d -> %d ---\n", layer, layer + 1);
+		printf("Number of neurons in next layer: %d\n", net.neurons_per_layer[layer + 1]);
+		printf("Number of inputs per neuron: %d\n\n", net.neurons_per_layer[layer]);
+		
+		for(int i = 0; i < net.neurons_per_layer[layer + 1]; i++){
+			printf("Neuron %d:\n", i);
+			printf("  Bias: %.8f\n", net.biases[layer][i][0]);
+			printf("  Weights: [");
+			for(int j = 0; j < net.neurons_per_layer[layer]; j++){
+				printf("%.8f", net.weights[layer][i][j]);
+				if(j < net.neurons_per_layer[layer] - 1) printf(", ");
+			}
+			printf("]\n\n");
+		}
+	}
+	printf("==============================================\n\n");
+}
+
 void print_weights(Network net, int epoch){
 	printf("\n========== Weights at Epoch %d ==========\n", epoch);
 	for(int layer = 0; layer < net.num_of_layers - 1; layer++){
@@ -544,10 +565,10 @@ void backprop(Network net, double** input, double** output){
 		transpose(net.weights[k], weight_rows, weight_cols, weight_matrix_transpose);
 		double** temp_sigma = create_matrix(weight_cols, 1);		
 		matrix_multiplication(weight_matrix_transpose, sigma, temp_sigma, weight_cols, weight_rows, net.neurons_per_layer[k+1], 1);
-		 for(int m = 0; m < weight_cols; m++){
-        sigma[m][0] = temp_sigma[m][0];
-    }
-		  free_memory_twoD(temp_sigma, weight_cols, 1);
+		for(int m = 0; m < weight_cols; m++){
+			sigma[m][0] = temp_sigma[m][0];
+		}
+		free_memory_twoD(temp_sigma, weight_cols, 1);
 		hadamard_matrix_mult(sigma, z_sigmoid_derivative, weight_cols, 1, sigma);
 		
 		for(int i = 0; i < net.neurons_per_layer[k]; i++){
@@ -801,22 +822,16 @@ void sgd(Network net, int epochs, double*** training_data, double*** labels, int
 	}
 }
 
-
-// Append this to your existing code, replacing the main() function
-
-// Helper function to create a simplified digit pattern
 void create_digit_pattern(double** image, int digit, int variation) {
-    // Initialize all pixels to 0 (black)
     for(int i = 0; i < 784; i++) {
         image[i][0] = 0.0;
     }
     
-    // Base patterns with variations
-    int offset_x = (variation % 3) - 1;  // -1, 0, 1
+    int offset_x = (variation % 3) - 1;
     int offset_y = ((variation / 3) % 3) - 1;
     
     switch(digit) {
-        case 0: // Draw a circle-ish pattern
+        case 0:
             for(int row = 8; row < 20; row++) {
                 for(int col = 8; col < 20; col++) {
                     int dist_sq = (row-14+offset_y)*(row-14+offset_y) + (col-14+offset_x)*(col-14+offset_x);
@@ -826,13 +841,13 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 }
             }
             break;
-        case 1: // Vertical line
+        case 1:
             for(int row = 5; row < 23; row++) {
                 image[row * 28 + (14+offset_x)][0] = 0.8;
                 image[row * 28 + (13+offset_x)][0] = 0.6;
             }
             break;
-        case 2: // Z-shaped pattern
+        case 2:
             for(int col = 8; col < 20; col++) {
                 image[(8+offset_y) * 28 + col][0] = 0.8;
                 image[(15+offset_y) * 28 + col][0] = 0.8;
@@ -845,7 +860,7 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 }
             }
             break;
-        case 3: // Two horizontal bars on right
+        case 3:
             for(int col = 12; col < 20; col++) {
                 image[(8+offset_y) * 28 + col][0] = 0.8;
                 image[(15+offset_y) * 28 + col][0] = 0.8;
@@ -855,7 +870,7 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 image[row * 28 + (19+offset_x)][0] = 0.8;
             }
             break;
-        case 4: // Like a chair
+        case 4:
             for(int row = 5; row < 15; row++) {
                 image[row * 28 + (10+offset_x)][0] = 0.8;
             }
@@ -866,7 +881,7 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 image[row * 28 + (17+offset_x)][0] = 0.8;
             }
             break;
-        case 5: // S-shaped
+        case 5:
             for(int col = 8; col < 20; col++) {
                 image[(7+offset_y) * 28 + col][0] = 0.8;
                 image[(14+offset_y) * 28 + col][0] = 0.8;
@@ -879,7 +894,7 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 image[row * 28 + (19+offset_x)][0] = 0.8;
             }
             break;
-        case 6: // Circle with line on left
+        case 6:
             for(int row = 10; row < 20; row++) {
                 for(int col = 10; col < 18; col++) {
                     int dist_sq = (row-15+offset_y)*(row-15+offset_y) + (col-14+offset_x)*(col-14+offset_x);
@@ -892,7 +907,7 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 image[row * 28 + (10+offset_x)][0] = 0.8;
             }
             break;
-        case 7: // Diagonal from top
+        case 7:
             for(int col = 8; col < 20; col++) {
                 image[(7+offset_y) * 28 + col][0] = 0.8;
             }
@@ -903,7 +918,7 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 }
             }
             break;
-        case 8: // Two circles stacked
+        case 8:
             for(int row = 6; row < 14; row++) {
                 for(int col = 10; col < 18; col++) {
                     int dist_sq = (row-10+offset_y)*(row-10+offset_y) + (col-14+offset_x)*(col-14+offset_x);
@@ -921,7 +936,7 @@ void create_digit_pattern(double** image, int digit, int variation) {
                 }
             }
             break;
-        case 9: // Circle with line on right
+        case 9:
             for(int row = 8; row < 18; row++) {
                 for(int col = 10; col < 18; col++) {
                     int dist_sq = (row-13+offset_y)*(row-13+offset_y) + (col-14+offset_x)*(col-14+offset_x);
@@ -937,7 +952,6 @@ void create_digit_pattern(double** image, int digit, int variation) {
     }
 }
 
-// Helper to create one-hot encoded label
 void create_one_hot_label(double** label, int digit) {
     for(int i = 0; i < 10; i++) {
         label[i][0] = 0.0;
@@ -945,31 +959,30 @@ void create_one_hot_label(double** label, int digit) {
     label[digit][0] = 1.0;
 }
 
-void network_file(const char* filename_weights, const char* filename_bias, Network net){ // The filename has to be in the binary format, name of the file can be test.bin
+void network_file(const char* filename_weights, const char* filename_bias, Network net){
 	int num_of_layers = net.num_of_layers-1;
 	FILE* file_weights = fopen(filename_weights, "wb");
 	FILE* file_bias = fopen(filename_bias, "wb");
 
-	for(int k =0; k<num_of_layers; k++){
-		for(int i =0; i<net.neurons_per_layer[k+1]; i++){
+	for(int k = 0; k < num_of_layers; k++){
+		for(int i = 0; i < net.neurons_per_layer[k+1]; i++){
 			fwrite(&net.biases[k][i][0], sizeof(double), 1, file_bias);
-			for(int j =0; j<net.neurons_per_layer[k]; j++){
+			for(int j = 0; j < net.neurons_per_layer[k]; j++){
 				fwrite(&net.weights[k][i][j], sizeof(double), 1, file_weights);
 			}
 		}
 	}
+	fclose(file_weights);
+	fclose(file_bias);
 }
 
-				
 int main(){
     printf("========================================================\n");
     printf("Neural Network Training on MNIST-like Handwritten Digits\n");
     printf("========================================================\n\n");
 
-    // Create dataset with UNEVEN distribution per digit (more realistic)
-    // samples_per_digit: how many samples of each digit to generate
-    int samples_per_digit[] = {7, 5, 8, 6, 5, 9, 4, 7, 6, 8}; // Uneven!
-    int train_per_digit[] = {5, 3, 6, 4, 3, 6, 2, 5, 4, 5};    // Training split
+    int samples_per_digit[] = {7, 5, 8, 6, 5, 9, 4, 7, 6, 8};
+    int train_per_digit[] = {5, 3, 6, 4, 3, 6, 2, 5, 4, 5};
     
     int total_samples = 0;
     int train_samples = 0;
@@ -979,8 +992,8 @@ int main(){
     }
     int test_samples = total_samples - train_samples;
     
-    int input_size = 784;  // 28x28 pixels
-    int output_size = 10;  // 10 digits (0-9)
+    int input_size = 784;
+    int output_size = 10;
 
     double*** all_data = (double***)malloc(sizeof(double**) * total_samples);
     double*** all_labels = (double***)malloc(sizeof(double**) * total_samples);
@@ -993,21 +1006,18 @@ int main(){
     }
     printf("]\n\n");
     
-    // Create samples with uneven distribution
     int idx = 0;
     for(int digit = 0; digit < 10; digit++) {
         for(int sample = 0; sample < samples_per_digit[digit]; sample++) {
-            
             all_data[idx] = create_matrix(input_size, 1);
             all_labels[idx] = create_matrix(output_size, 1);
             
             create_digit_pattern(all_data[idx], digit, sample);
             create_one_hot_label(all_labels[idx], digit);
             
-            // Add some noise to make samples different
             srand(time(NULL) + idx * 13);
             for(int i = 0; i < 784; i++) {
-                if(rand() % 100 < 5) { // 5% noise
+                if(rand() % 100 < 5) {
                     all_data[idx][i][0] += ((double)rand() / RAND_MAX) * 0.3 - 0.15;
                     if(all_data[idx][i][0] < 0.0) all_data[idx][i][0] = 0.0;
                     if(all_data[idx][i][0] > 1.0) all_data[idx][i][0] = 1.0;
@@ -1017,7 +1027,6 @@ int main(){
         }
     }
 
-    // Split into train and test sets (uneven split per digit)
     double*** training_data = (double***)malloc(sizeof(double**) * train_samples);
     double*** train_labels = (double***)malloc(sizeof(double**) * train_samples);
     double*** test_data = (double***)malloc(sizeof(double**) * test_samples);
@@ -1028,14 +1037,12 @@ int main(){
     int data_idx = 0;
     
     for(int digit = 0; digit < 10; digit++) {
-        // First N samples go to training (N = train_per_digit[digit])
         for(int i = 0; i < train_per_digit[digit]; i++) {
             training_data[train_idx] = all_data[data_idx];
             train_labels[train_idx] = all_labels[data_idx];
             train_idx++;
             data_idx++;
         }
-        // Remaining samples go to testing
         for(int i = train_per_digit[digit]; i < samples_per_digit[digit]; i++) {
             test_data[test_idx] = all_data[data_idx];
             test_labels[test_idx] = all_labels[data_idx];
@@ -1055,7 +1062,6 @@ int main(){
     printf("  ------|-------|-------|-----\n");
     printf("  Total |  %2d   |  %2d   | %2d\n\n", total_samples, train_samples, test_samples);
 
-    // Network architecture: 784 inputs -> 128 hidden -> 64 hidden -> 10 output
     int num_layers = 4;
     int neurons_per_layer[] = {784, 128, 64, 10};
 
@@ -1071,7 +1077,6 @@ int main(){
 
     Network net = initialize_network(num_layers, neurons_per_layer);
 
-    // Training parameters
     int epochs = 5000;
     int batch_size = 10;
     double learning_rate = 0.1;
@@ -1088,9 +1093,11 @@ int main(){
     
     printf("\nTraining completed!\n\n");
 
-    // Test on TRAINING set
+    // PRINT FINAL WEIGHTS AND BIASES
+    print_weights_and_biases(net);
+
     printf("========================================================\n");
-    printf("Testing on TRAINING SET (30 samples)\n");
+    printf("Testing on TRAINING SET\n");
     printf("========================================================\n\n");
 
     double** test_input = create_matrix(784, 1);
@@ -1149,9 +1156,8 @@ int main(){
         }
     }
 
-    // Test on TEST set (unseen data)
     printf("\n========================================================\n");
-    printf("Testing on TEST SET (20 samples - UNSEEN DATA)\n");
+    printf("Testing on TEST SET (UNSEEN DATA)\n");
     printf("========================================================\n\n");
 
     int test_correct = 0;
@@ -1214,10 +1220,11 @@ int main(){
                (test_digit_correct[i] * 100.0) / test_digit_total[i]);
     }
 
-   network_file("weights.bin", "bias.bin", net);
+    network_file("weights.bin", "bias.bin", net);
     printf("\n========================================================\n");
+    printf("Weights and biases saved to weights.bin and bias.bin\n");
+    printf("========================================================\n");
 
-    // Cleanup
     free_memory_twoD(test_input, 784, 1);
 
     for(int i = 0; i < total_samples; i++){
@@ -1242,7 +1249,6 @@ int main(){
     for(int i = 0; i < net.num_of_layers; i++){
         free_memory_twoD(net.activations[i], net.neurons_per_layer[i], 1);
     }
-
 
     free(net.weights);
     free(net.biases);
