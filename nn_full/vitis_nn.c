@@ -17,20 +17,39 @@ typedef struct Network{
 } Network;
 
 typedef struct Testing{
-	double inputs[LAYER_ONE]; 
-	double outputs[LAYER_FOUR]; // Optional to fill
-	double output_predicted[LAYER_FOUR];
+	double inputs[LAYER_ONE][1]; 
+	double outputs[LAYER_FOUR][1]; // Optional to fill
+	double output_predicted[LAYER_FOUR][1];
 	double accuracy; // Optional
 } Testing;
 
-void fill_network(Network* net,int neurons_per_layer[num_of_layers], double weights[number_of_layers-1][LAYER_ONE][LAYER_ONE], double biases[number_of_layers-1][LAYER_ONE][1]){
+void load_parameters(const char* weight_path, const char* bias_path, Network* net){
+	FILE * wf = fopen(weight_path, "rb");
+	FILE *bf = fopen(bias_path, "rb");
+
+	int num_of_layers = net->num_of_layers-1;
+	for(int k =0; k<num_of_layers; k++){
+		int rows = net->neurons_per_layer[k+1];
+		int cols = net->neurons_per_layer[k];
+
+		for(int i =0; i<rows; i++){
+			fread(&net->biases[k][i][0], sizeof(double), 1, bf);
+			for(int j =0; j<cols; j++){
+				fread(&net->weights[k][i][j], sizeof(double), 1, wf);
+			}
+		}
+	}
+}
+
+
+void fill_network(Network* net,int neurons_per_layer[number_of_layers], double weights[number_of_layers-1][LAYER_ONE][LAYER_ONE], double biases[number_of_layers-1][LAYER_ONE][1]){
 	net->num_of_layers = number_of_layers;
 
-	for(int i =0; i<num_of_layers; i++){
+	for(int i =0; i<number_of_layers; i++){
 		net->neurons_per_layer[i] = neurons_per_layer[i];
 	}
 
-	for(int k =0; k<num_of_layers-1; k++){
+	for(int k =0; k<number_of_layers-1; k++){
 		for(int i =0; i<net->neurons_per_layer[k+1]; i++){
 			net->biases[k][i][0] = biases[k][i][0];
 			for(int j =0; j<net->neurons_per_layer[k]; j++){
@@ -40,27 +59,19 @@ void fill_network(Network* net,int neurons_per_layer[num_of_layers], double weig
 	}
 }
 
-void sigmoid(double* x){
-	x = 1.0/(1.0 + exp(-x));
+double sigmoid(double x){
+	double y = 1.0/(1.0 + exp(-x));
+	return y;
 }
 
-void sigmoid_derivative(double* x){
-	x = exp(-x)/((1+exp(-x)) *(1+ exp(-x)));
-}
 
 void sigmoid_list(double x[LAYER_ONE][1], int list_size, double output[LAYER_ONE][1]){
 	for(int i =0; i<list_size; i++){
-		output[i] = sigmoid(x[i]);
+		output[i][0] = sigmoid(x[i][0]);
 	}
 }
 
-void sigmoid_derivative_list(double x[LAYER_ONE], int list_size){
-	for(int i =0; i<list_size; i++){
-		x[i] = sigmoid_derivative(x[i]);
-	}
-}
-
-void matrix_multiplication(double matrix_one[LAYER_ONE][LAYER_ONE], double matrix_two[LAYER_ONE][LAYER_ONE], double product_matrix[LAYER_ONE][LAYER_ONE], int row_one,
+void matrix_multiplication(double matrix_one[LAYER_ONE][LAYER_ONE], double matrix_two[LAYER_ONE][1], double product_matrix[LAYER_ONE][1], int row_one,
 		int col_one, int row_two, int col_two){
 	for(int i =0; i<row_one; i++){
 		for(int j =0; j<col_two; j++){
@@ -71,10 +82,10 @@ void matrix_multiplication(double matrix_one[LAYER_ONE][LAYER_ONE], double matri
 	}
 }
 
-void matrix_addition(double matrix_one[LAYER_ONE][LAYER_ONE], double matrix_two[LAYER_ONE][LAYER_ONE], double addition_matrix[LAYER_ONE][LAYER_ONE], int rows, int cols){
+void matrix_addition(double matrix_one[LAYER_ONE][1], double matrix_two[LAYER_ONE][1], double addition_matrix[LAYER_ONE][1], int rows, int cols){
 	for(int i =0; i<rows; i++){
 		for(int j =0; j<cols; j++){
-			addition_matrix = matrix_one[i][j] + matrix_two[i][j];
+			addition_matrix[i][j] = matrix_one[i][j] + matrix_two[i][j];
 		}
 	}
 }
@@ -82,10 +93,10 @@ void matrix_addition(double matrix_one[LAYER_ONE][LAYER_ONE], double matrix_two[
 void feed_forward(Network* net, Testing* data){
        int size_of_input = net->neurons_per_layer[0];
        for(int i = 0; i < size_of_input; i++){
-                if(net->activations[0][i] == NULL || activation_input[i] == NULL){
+                if(net->activations[0][i] == NULL || data->inputs[i] == NULL){
                         continue;
                 }
-                net->activations[0][i][0] = activation_input[i][0];
+                net->activations[0][i][0] = data->inputs[i][0];
         }
 
        int max_neurons = net->neurons_per_layer[0];
@@ -105,8 +116,8 @@ void feed_forward(Network* net, Testing* data){
 		 int weight_rows = net->neurons_per_layer[i+1];
 		 int weight_cols = net->neurons_per_layer[i];
 
-		 matrix_multiplication(net->weights[i], data->inputs, product_matrix, weights_rows, weights_cols, net->neurons_per_layer[i], 1);
-		 matrix_addition(net.biases[i], product_matrix, addition_matrix, weight_rows, 1);
+		 matrix_multiplication(net->weights[i], net->activations[i], product_matrix, weight_rows, weight_cols, net->neurons_per_layer[i], 1);
+		 matrix_addition(net->biases[i], product_matrix, addition_matrix, weight_rows, 1);
 
 		 for(int j =0; j<weight_rows; j++){
 			 net->z_s[i][j][0] = addition_matrix[j][0];
@@ -115,11 +126,12 @@ void feed_forward(Network* net, Testing* data){
 		 sigmoid_list(net->z_s[i], weight_rows, activated_output);
 
 		 for(int j =0; j<weight_rows; j++){
-			 data.inputs[j][0] = activated_output[j][0];
-			 net.activations[i+1][j][0] = activated_output[j][0];
+			 net->activations[i+1][j][0] = activated_output[j][0];
 		 }
 
 		}
 }
+
+
 
 		 
